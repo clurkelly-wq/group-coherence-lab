@@ -7,41 +7,36 @@
   <title>Group Coherence Lab</title>
   <link rel="manifest" href="manifest.json"/>
   <meta name="theme-color" content="#88eeff"/>
-  <!-- Load Supabase FIRST -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- PDF libs -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <!-- Supabase + jsPDF (loaded first so they're ready) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
   <style>
     :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#88eeff; }
     html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    header{padding:16px;text-align:center;position:relative}
-    .header-actions{position:absolute;right:10px;top:10px;display:flex;gap:8px}
-    @media(max-width:520px){ .header-actions{position:static;justify-content:center;margin-top:8px} }
-    h1{margin:4px 0 2px;font-size:22px;letter-spacing:.3px}
-    .subtitle{color:var(--muted);font-size:13px}
+    header{padding:20px 16px;text-align:center;position:relative}
+    h1{margin:0;font-size:22px;letter-spacing:.5px}
+    .subtitle{color:#93a0c7;font-size:13px;margin-top:4px}
     .wrap{max-width:980px;margin:0 auto;padding:0 16px 40px}
     .grid{display:grid;grid-template-columns:1fr;gap:16px}
-    @media(min-width:980px){.grid{grid-template-columns:1.2fr 1fr}}
+    @media(min-width:1000px){.grid{grid-template-columns:1.2fr 1fr}}
+    .header-actions{position:absolute;right:8px;top:8px;display:flex;gap:8px}
+    @media(max-width:520px){.header-actions{position:static;justify-content:center;margin-top:8px}}
     .card{background:var(--panel);border:1px solid #262a43;border-radius:14px;padding:16px}
     .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
     input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:8px 10px;width:100%}
-    .row3{display:grid;grid-template-columns:1fr 1fr 0.7fr;gap:10px;margin-top:8px} /* tighter inputs */
-    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     button{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
-    button.ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158}
     button:disabled{opacity:.6;cursor:not-allowed}
-    .pill{display:inline-block;padding:6px 10px;border:1px solid #2b3158;border-radius:999px;color:var(--muted);font-size:12px;margin-left:6px}
+    .pill{display:inline-block;padding:6px 10px;border:1px solid #2b3158;border-radius:999px;color:var(--muted);font-size:12px}
     canvas{width:100%;height:260px;background:#0b0d1a;border:1px solid #22264a;border-radius:10px;display:block}
     .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
     .stat{background:#0e1020;border:1px solid #22264a;border-radius:10px;padding:10px}
     .stat b{display:block;font-size:20px;margin-top:6px;color:#bfe6ff}
     table{width:100%;border-collapse:collapse}th,td{padding:6px 8px;border-bottom:1px solid #262a43;text-align:left}
     a{color:var(--accent)}
-    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:9999}
-    .modal{width:min(720px,92vw);background:#11142a;border:1px solid #2b3158;border-radius:16px;padding:18px}
-    .modal h2{margin:0 0 8px 0;font-size:20px}.modal p,.modal ul{color:#c9d4ff;line-height:1.5}.modal ul{margin:0 0 0 18px}
-    .modal .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+    .ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158;padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer}
     .hidden{display:none!important}
   </style>
 </head>
@@ -49,40 +44,22 @@
 <header>
   <div class="header-actions">
     <button id="helpBtn" class="ghost">Help</button>
-    <button id="settingsBtn" class="ghost">Settings</button>
   </div>
   <h1>Group Coherence Lab</h1>
   <div class="subtitle">Testing how our consciousness affects a quantum random number generator</div>
 </header>
 
 <!-- Help modal -->
-<div id="helpBackdrop" class="modal-backdrop">
-  <div class="modal">
-    <h2>What the numbers mean (Beginner Mode)</h2>
+<div id="helpBackdrop" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999">
+  <div class="card" style="width:min(720px,92vw)">
+    <h2 style="margin:0 0 8px 0;font-size:20px">What the numbers mean</h2>
     <p><b>Big picture:</b> we flip lots of virtual coins from a real random source. If focus creates order, we sometimes see a gentle bias away from perfect 50/50.</p>
     <ul>
       <li><b>Overall Drift</b>: how far the run has wandered from pure chance so far. Around 0 is normal.</li>
       <li><b>How Unusual?</b>: the odds that this much drift could happen just by chance. Smaller numbers = more unusual.</li>
       <li><b>Number of Tests</b>: how many coin‑flip batches we’ve done in this session.</li>
     </ul>
-    <p><b>Important:</b> one spicy run doesn’t prove anything. We look for patterns across many sessions.</p>
-    <div class="actions"><button id="closeHelp" class="ghost">Close</button></div>
-  </div>
-</div>
-
-<!-- Settings modal -->
-<div id="settingsBackdrop" class="modal-backdrop">
-  <div class="modal">
-    <h2>Settings</h2>
-    <div class="row2">
-      <div id="projectRow"><div class="subtitle">Project code</div><input id="projectCode" placeholder="e.g., clare-circle-001"/></div>
-      <div><div class="subtitle">Status</div><span id="cloudStatus" class="pill">Not connected</span></div>
-    </div>
-    <div class="row2">
-      <div><div class="subtitle">Supabase URL</div><input id="supabaseUrl" placeholder="https://YOUR-PROJECT.supabase.co"/></div>
-      <div><div class="subtitle">Supabase anon key</div><input id="supabaseKey" placeholder="Paste anon public key"/></div>
-    </div>
-    <div class="actions"><button id="saveCloud" class="ghost">Save</button><button id="closeSettings" class="ghost">Close</button></div>
+    <div style="text-align:right"><button id="closeHelp" class="ghost">Close</button></div>
   </div>
 </div>
 
@@ -90,43 +67,42 @@
   <div class="grid">
     <div class="card">
       <div class="label">Session setup</div>
-      <div class="row3">
-        <div><div class="subtitle">Tester name</div><input id="testerName" placeholder="e.g., Clare"/></div>
-        <div><div class="subtitle">Session title</div><input id="sessionTitle" placeholder="e.g., Compassion"/></div>
-        <div><div class="subtitle">Duration (min)</div><input id="duration" type="number" min="1" max="60" value="1"/></div>
+      <div class="row3" style="margin-top:8px">
+        <div><div class="label">Tester name</div><input id="testerName" placeholder="e.g., Clare"/></div>
+        <div><div class="label">Session title</div><input id="sessionTitle" placeholder="e.g., Sunday Circle"/></div>
+        <div><div class="label">Duration (minutes)</div><input id="duration" type="number" min="1" max="60" value="10"/></div>
       </div>
-      <div class="row2">
-        <div><div class="subtitle">Trial size (bits)</div><input id="trialBits" type="number" min="50" max="2000" value="200"/></div>
-        <div><div class="subtitle">Alpha</div>
+      <div class="row3" style="margin-top:8px">
+        <div><div class="label">Trial size (bits)</div><input id="trialBits" type="number" min="50" max="2000" value="200"/></div>
+        <div><div class="label">Alpha</div>
           <select id="alpha"><option value="0.05" selected>0.05 (95%)</option><option value="0.01">0.01 (99%)</option></select>
         </div>
-      </div>
-      <div style="margin-top:12px">
-        <button id="startBtn">Start focus window</button>
-        <button id="stopBtn" disabled>End early</button>
-        <span class="pill" id="clock">Idle</span>
-        <span class="pill" id="elapsed">Elapsed: 00:00</span>
-        <span class="pill" id="projectBadge" style="margin-left:8px">Project: —</span>
+        <div style="display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap">
+          <button id="startBtn">Start</button>
+          <button id="stopBtn" disabled>End</button>
+          <span class="pill" id="clock">Idle</span>
+          <span class="pill" id="elapsed">Elapsed: 00:00</span>
+          <span class="pill" id="projectBadge">Project: —</span>
+        </div>
       </div>
     </div>
     <div class="card">
       <div class="label">Live deviation</div>
-      <div class="subtitle" id="sourceNote">Active source: —</div>
+      <div class="small muted" id="sourceNote">Active source: —</div>
       <canvas id="plot" width="800" height="260"></canvas>
       <div class="stats">
-        <div class="stat"><span class="subtitle">Overall Drift</span><b id="cumZ">—</b></div>
-        <div class="stat"><span class="subtitle">How Unusual?</span><b id="pval">—</b></div>
-        <div class="stat"><span class="subtitle">Number of Tests</span><b id="trials">0</b></div>
+        <div class="stat"><span class="small muted">Overall Drift</span><b id="cumZ">—</b></div>
+        <div class="stat"><span class="small muted">How Unusual?</span><b id="pval">—</b></div>
+        <div class="stat"><span class="small muted">Number of Tests</span><b id="trials">0</b></div>
       </div>
     </div>
   </div>
 
   <div class="card">
     <div class="label">Past sessions (shared)</div>
-    <div style="margin:10px 0; display:flex; gap:8px; flex-wrap:wrap">
-      <button id="exportBtn">Export CSV</button>
-      <button id="exportPdfBtn">Export PDF</button>
-      <button id="clearBtn">Clear all (danger)</button>
+    <div style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap">
+      <button id="exportCsv">Export CSV</button>
+      <button id="exportPdf">Export PDF</button>
       <span class="pill">Combined Stouffer Z (last 30): <b id="comboZ">—</b></span>
     </div>
     <div id="table" class="small"></div>
@@ -134,23 +110,39 @@
 </div>
 
 <script>
-// ===== QRNG via Netlify Function (CORS-free) =====
-async function fetchQRNGUint16(n){
-  const res = await fetch(`/.netlify/functions/qrng?len=${n}`);
-  if(!res.ok) throw new Error('QRNG proxy failed');
-  const j = await res.json();
-  const arr = j.data || [];
-  document.getElementById('sourceNote').textContent = 'Active source: '+(j.source||'Unknown (proxy)');
-  return new Uint16Array(arr);
-}
+// ------------- Hardcoded Supabase (public anon key) -------------
+const SUPABASE_URL = "https://wyecvewtlgyzizupocfh.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZWN2ZXd0bGd5eml6dXBvY2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTYzODcsImV4cCI6MjA3MDY5MjM4N30.nfcrwzm1t-d5l3DiME5RFahC_LVxStn0IekaPjMKMpg";
+const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// ===== Helpers =====
+// ------------- Project lock from URL -------------
+(function(){
+  const params=new URLSearchParams(location.search);
+  if(params.has('project')){
+    localStorage.setItem('project_code', params.get('project'));
+    localStorage.setItem('project_locked','1');
+  }
+  const code = localStorage.getItem('project_code')||'default';
+  document.getElementById('projectBadge').textContent = 'Project: ' + code + (localStorage.getItem('project_locked')==='1'?' (locked)':'');
+})();
+
+// ------------- Helpers -------------
 function erf(x){const s=x>=0?1:-1; x=Math.abs(x); const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911; const t=1/(1+p*x); const y=1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x); return s*y;}
 function cdfNormal(z){return .5*(1+erf(z/Math.SQRT2));}
 function twoSidedP(z){return 2*(1-cdfNormal(Math.abs(z)));}
 function stoufferZ(zs){if(!zs.length) return 0; const s=zs.reduce((a,b)=>a+b,0); return s/Math.sqrt(zs.length);}
 
-// ===== Plot =====
+// ------------- RNG via Netlify Function -------------
+async function qrng(len){
+  const r = await fetch(`/.netlify/functions/qrng?len=${len}`, { mode:'cors' });
+  if(!r.ok) throw new Error('qrng failed');
+  const j = await r.json();
+  const arr = j.data || [];
+  const note=document.getElementById('sourceNote'); if(note) note.textContent = 'Active source: ' + (j.source || 'Unknown');
+  return new Uint16Array(arr.map(x=>x&0xFFFF));
+}
+
+// ------------- Plot -------------
 const canvas=document.getElementById('plot'); const ctx=canvas.getContext('2d');
 function clearPlot(){ctx.fillStyle='#0b0d1a';ctx.fillRect(0,0,canvas.width,canvas.height);}
 function drawAxes(){ctx.strokeStyle='#22264a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(40,10);ctx.lineTo(40,canvas.height-20);ctx.lineTo(canvas.width-10,canvas.height-20);ctx.stroke();ctx.fillStyle='#93a0c7';ctx.font='12px system-ui';ctx.fillText('Z',10,16);ctx.fillText('Trials →',canvas.width-100,canvas.height-6);}
@@ -166,167 +158,114 @@ function plotSeries(zs,alpha){
   ctx.beginPath();ctx.moveTo(x(0),y(cums[0]||0)); for(let i=1;i<n;i++){ctx.lineTo(x(i),y(cums[i]));} ctx.stroke();
 }
 
-// ===== Cloud (Supabase) =====
-const CLOUD = {
-  url: localStorage.getItem('supabase_url')||'',
-  key: localStorage.getItem('supabase_key')||'',
-  project: localStorage.getItem('project_code')||'',
-  locked: localStorage.getItem('project_locked')==='1',
-  client(){ if(!this.url || !this.key || typeof supabase==='undefined') return null; return supabase.createClient(this.url, this.key); },
-  status(el){ el.textContent = (this.url&&this.key)? `Connected (${this.locked?'locked':'editable'}) — project: ${this.project||'—'}` : 'Not connected'; }
-};
-
-// URL lock
-(function projectLockFromURL(){
-  const params=new URLSearchParams(location.search);
-  if(params.has('project')){
-    const code=params.get('project').trim();
-    localStorage.setItem('project_code', code);
-    localStorage.setItem('project_locked','1');
-    CLOUD.project = code; CLOUD.locked = true;
-  }else{
-    CLOUD.project = localStorage.getItem('project_code')||'';
-    CLOUD.locked = localStorage.getItem('project_locked')==='1';
+// ------------- Cloud helpers -------------
+async function dbFetch(){
+  const project = localStorage.getItem('project_code') || 'default';
+  try {
+    const { data, error } = await SB.from('sessions').select('*').eq('project', project).order('start', { ascending:false }).limit(500);
+    if (error) throw error;
+    localStorage.setItem('sessions_cache', JSON.stringify(data||[]));
+    return data || [];
+  } catch (e) {
+    console.warn('Supabase fetch error', e);
+    return JSON.parse(localStorage.getItem('sessions_cache')||'[]').filter(r=>r.project===project);
   }
-  const badge=document.getElementById('projectBadge');
-  badge.textContent='Project: '+(CLOUD.project||'—')+(CLOUD.locked?' (locked)':'');
-  if(CLOUD.locked) document.getElementById('projectRow').classList.add('hidden');
-})();
-
-async function dbFetchSessions(){
-  const client=CLOUD.client();
-  if(!client){ return JSON.parse(localStorage.getItem('gclab_sessions_v_cloud')||'[]').filter(r=>r.project===CLOUD.project); }
-  const { data, error } = await client.from('sessions').select('*').eq('project', CLOUD.project||'default').order('start',{ascending:false}).limit(500);
-  if(error){ console.warn('Supabase fetch error', error); return JSON.parse(localStorage.getItem('gclab_sessions_v_cloud')||'[]').filter(r=>r.project===CLOUD.project); }
-  localStorage.setItem('gclab_sessions_v_cloud', JSON.stringify(data)); return data;
 }
-async function dbInsertSession(rec){
-  const client=CLOUD.client();
-  if(!client){
-    const s=JSON.parse(localStorage.getItem('gclab_sessions_v_cloud')||'[]'); s.unshift(rec); localStorage.setItem('gclab_sessions_v_cloud', JSON.stringify(s)); return true;
+async function dbInsert(rec){
+  try {
+    const { error } = await SB.from('sessions').insert(rec);
+    if (error) throw error;
+  } catch (e) {
+    const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]'); s.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(s));
   }
-  const { error } = await client.from('sessions').insert(rec);
-  if(error){
-    console.warn('Supabase insert error', error);
-    const s=JSON.parse(localStorage.getItem('gclab_sessions_v_cloud')||'[]'); s.unshift(rec); localStorage.setItem('gclab_sessions_v_cloud', JSON.stringify(s));
-  }
-  return true;
-}
-async function dbClear(){
-  const client=CLOUD.client();
-  if(!client){ const s=JSON.parse(localStorage.getItem('gclab_sessions_v_cloud')||'[]').filter(r=>r.project!==CLOUD.project); localStorage.setItem('gclab_sessions_v_cloud', JSON.stringify(s)); return; }
-  await client.from('sessions').delete().eq('project',CLOUD.project||'default');
 }
 
-// ===== UI refs =====
+// ------------- UI refs -------------
 const nameEl=document.getElementById('testerName'), titleEl=document.getElementById('sessionTitle'), durEl=document.getElementById('duration'), trialBitsEl=document.getElementById('trialBits'), alphaEl=document.getElementById('alpha');
-const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), clockEl=document.getElementById('clock'), elapsedEl=document.getElementById('elapsed'), cumZEl=document.getElementById('cumZ'), pvalEl=document.getElementById('pval'), trialsEl=document.getElementById('trials');
-const tableEl=document.getElementById('table'), comboZEl=document.getElementById('comboZ'), exportBtn=document.getElementById('exportBtn'), clearBtn=document.getElementById('clearBtn'), exportPdfBtn=document.getElementById('exportPdfBtn');
+const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), clockEl=document.getElementById('clock'), elapsedEl=document.getElementById('elapsed');
+const tableEl=document.getElementById('table'), comboZEl=document.getElementById('comboZ'), exportCsvBtn=document.getElementById('exportCsv'), exportPdfBtn=document.getElementById('exportPdf');
 const helpBtn=document.getElementById('helpBtn'), helpBackdrop=document.getElementById('helpBackdrop'), closeHelp=document.getElementById('closeHelp');
-const settingsBtn=document.getElementById('settingsBtn'), settingsBackdrop=document.getElementById('settingsBackdrop'), closeSettings=document.getElementById('closeSettings');
-const projectEl=document.getElementById('projectCode'), urlEl=document.getElementById('supabaseUrl'), keyEl=document.getElementById('supabaseKey'), saveCloudBtn=document.getElementById('saveCloud'), cloudStatus=document.getElementById('cloudStatus');
 
-helpBtn.addEventListener('click',()=> helpBackdrop.style.display='flex');
-closeHelp.addEventListener('click',()=> helpBackdrop.style.display='none');
-helpBackdrop.addEventListener('click',e=>{ if(e.target===helpBackdrop) helpBackdrop.style.display='none'; });
+helpBtn.addEventListener('click',()=> helpBackdrop.classList.remove('hidden'));
+closeHelp.addEventListener('click',()=> helpBackdrop.classList.add('hidden'));
 
-settingsBtn.addEventListener('click',()=> {
-  projectEl.value = CLOUD.project||''; urlEl.value = CLOUD.url||''; keyEl.value = CLOUD.key||'';
-  CLOUD.status(cloudStatus);
-  settingsBackdrop.style.display='flex';
-});
-closeSettings.addEventListener('click',()=> settingsBackdrop.style.display='none');
-settingsBackdrop.addEventListener('click',e=>{ if(e.target===settingsBackdrop) settingsBackdrop.style.display='none'; });
-saveCloudBtn.addEventListener('click', async ()=>{
-  if(!CLOUD.locked){ CLOUD.project = projectEl.value.trim(); localStorage.setItem('project_code', CLOUD.project); }
-  CLOUD.url = urlEl.value.trim(); CLOUD.key = keyEl.value.trim();
-  localStorage.setItem('supabase_url', CLOUD.url); localStorage.setItem('supabase_key', CLOUD.key);
-  CLOUD.status(cloudStatus);
-  await renderTable();
-  alert('Saved cloud settings.');
-});
-
-// ===== Table + Export =====
-function renderTableFrom(rows){
+// ------------- Table + exports -------------
+function renderTable(rows){
   const rowsHtml=rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td><td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td><td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td><td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td><td>${r.source}</td></tr>`).join('');
   tableEl.innerHTML=`<table><thead><tr><th>#</th><th>Tester</th><th>Title</th><th>Start</th><th>Min</th><th>Tests</th><th>Bits/Trial</th><th>Alpha</th><th>Z</th><th>p</th><th>Source</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
   const zs=rows.slice(0,30).map(r=>+r.z); comboZEl.textContent = (zs.length? (stoufferZ(zs).toFixed(3)) : '—');
 }
-async function renderTable(){ const rows=await dbFetchSessions(); renderTableFrom(rows); }
-
-exportBtn.addEventListener('click', async ()=>{
-  const s=await dbFetchSessions(); const header=['project','tester','title','start','duration_min','trials','trial_bits','alpha','z','p','source'];
+exportCsvBtn.addEventListener('click', async ()=>{
+  const s=await dbFetch(); const header=['project','tester','title','start','duration_min','trials','trial_bits','alpha','z','p','source'];
   const lines=[header.join(',')].concat(s.map(r=> header.map(k=> r[k]).join(',')));
   const blob=new Blob([lines.join('\n')],{type:'text/csv'}); const url=URL.createObjectURL(blob);
   const a=document.createElement('a'); a.href=url; a.download='gclab_sessions.csv'; a.click(); URL.revokeObjectURL(url);
 });
 exportPdfBtn.addEventListener('click', async ()=>{
+  const s=await dbFetch();
   const { jsPDF } = window.jspdf; const doc=new jsPDF({unit:'pt',format:'a4'});
-  const rows=await dbFetchSessions();
-  doc.setFont('helvetica','bold'); doc.setFontSize(16);
-  doc.text('Group Coherence — Past Sessions', 40, 50);
-  doc.setFont('helvetica','normal'); doc.setFontSize(11);
-  doc.text(`Project: ${CLOUD.project||'—'}`, 40, 70);
-  const body = rows.map((r,i)=>[i+1, r.tester||'', r.title||'', new Date(r.start).toLocaleString(), r.duration_min, r.trials, r.trial_bits, r.alpha, (+r.z).toFixed(3), (+r.p).toExponential(2), r.source]);
-  // @ts-ignore autotable injected by plugin
-  doc.autoTable({ startY: 90, head:[['#','Tester','Title','Start','Min','Tests','Bits/Trial','Alpha','Z','p','Source']], body });
-  doc.save('gclab_sessions.pdf');
+  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text('Group Coherence — All Sessions', 40, 40);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text('Project: ' + (localStorage.getItem('project_code')||'default'), 40, 58);
+  const head=[['#','Tester','Title','Start','Min','Tests','Bits','Alpha','Z','p','Source']];
+  const body = s.map((r,i)=>[i+1, r.tester||'', r.title||'', new Date(r.start).toLocaleString(), r.duration_min, r.trials, r.trial_bits, r.alpha, (+r.z).toFixed(3), (+r.p).toExponential(2), r.source]);
+  doc.autoTable({ head, body, startY: 72, styles:{fontSize:9, cellPadding:3}, headStyles:{fillColor:[14,165,233]} });
+  doc.save('group_coherence_sessions.pdf');
 });
-clearBtn.addEventListener('click', async ()=>{ if(confirm('Delete all saved sessions for this Project code?')){ await dbClear(); renderTable(); } });
 
-// ===== Session engine =====
-let session=null, timerId=null;
-function lockUI(locked){
-  [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn].forEach(el=> el.disabled=locked);
-  stopBtn.disabled=!locked;
-  clockEl.textContent=locked?'Running…':'Idle';
+// ------------- Session engine -------------
+let session=null, elapsedTimer=null;
+function lockUI(run){
+  [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn].forEach(el=> el.disabled=run);
+  stopBtn.disabled=!run; clockEl.textContent = run ? 'Running…' : 'Idle';
 }
-function setElapsed(ms){
-  const sec=Math.floor(ms/1000), m=Math.floor(sec/60), s=sec%60;
-  elapsedEl.textContent=`Elapsed: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+function startElapsed(){
+  const t0=Date.now();
+  elapsedEl.textContent='Elapsed: 00:00';
+  elapsedTimer = setInterval(()=>{
+    const ms=Date.now()-t0; const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000);
+    elapsedEl.textContent = `Elapsed: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }, 500);
 }
-async function coreSession(){
-  const project = CLOUD.project||'default';
-  const plan={tester:nameEl.value.trim()||'—', title:titleEl.value.trim(), duration_min:Math.max(1,parseInt(durEl.value||'1',10)), trial_bits:Math.max(50,parseInt(trialBitsEl.value||'200',10)), alpha:alphaEl.value, start:new Date().toISOString()};
-  session={plan,trials:[],zs:[],stop:false}; lockUI(true); clearPlot(); drawAxes();
-  const startTs=Date.now(); const endTime=startTs+plan.duration_min*60*1000;
-  timerId=setInterval(()=> setElapsed(Date.now()-startTs), 500);
+function stopElapsed(){ if(elapsedTimer){ clearInterval(elapsedTimer); elapsedTimer=null; }}
+
+async function runSession(){
+  const project = localStorage.getItem('project_code') || 'default';
+  const plan={ tester:nameEl.value.trim()||'—', title:titleEl.value.trim(), duration_min:Math.max(1,parseInt(durEl.value||'10',10)), trial_bits:Math.max(50,parseInt(trialBitsEl.value||'200',10)), alpha:alphaEl.value, start:new Date().toISOString() };
+  session={plan,zs:[],stop:false}; lockUI(true); clearPlot(); drawAxes(); startElapsed();
+  const endTime=Date.now()+plan.duration_min*60*1000;
   try{
     while(!session.stop && Date.now()<endTime){
-      const nWords=Math.ceil(plan.trial_bits/16);
-      let u16;
-      try{ u16=await fetchQRNGUint16(nWords); }
-      catch(e){ console.warn('QRNG proxy error',e); u16=new Uint16Array(Array.from({length:nWords},()=> (Math.random()*65536)|0)); document.getElementById('sourceNote').textContent='Active source: Local PRNG (proxy fallback)'; }
+      const words=Math.ceil(plan.trial_bits/16);
+      const u16=await qrng(Math.min(1024,words));
       const bits=[]; for(let i=0;i<u16.length;i++){ let v=u16[i]; for(let b=0;b<16;b++){ bits.push((v>>b)&1); } }
       const trial=bits.slice(0,plan.trial_bits); const sum=trial.reduce((a,b)=>a+b,0);
       const n=plan.trial_bits, mu=n/2, sigma=Math.sqrt(n/4); const z=(sum-mu)/sigma;
-      session.trials.push({sum,n,z}); session.zs.push(z);
-      trialsEl.textContent=session.trials.length; plotSeries(session.zs, plan.alpha);
-      const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(session.zs.length); cumZEl.textContent=cumZ.toFixed(3); pvalEl.textContent=twoSidedP(cumZ).toExponential(2);
+      session.zs.push(z);
+      document.getElementById('trials').textContent=session.zs.length;
+      plotSeries(session.zs, plan.alpha);
+      const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(session.zs.length);
+      document.getElementById('cumZ').textContent=cumZ.toFixed(3);
+      document.getElementById('pval').textContent=twoSidedP(cumZ).toExponential(2);
       await new Promise(r=> setTimeout(r,1000));
     }
     const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(Math.max(1,session.zs.length));
-    const rec={ project, tester:plan.tester, title:plan.title, start:plan.start, duration_min:plan.duration_min, trials:session.trials.length, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:twoSidedP(cumZ), source:'QRNG proxy → fallbacks' };
-    await dbInsertSession(rec);
-    await renderTable();
-  }catch(err){
-    console.error('Session error', err);
+    const rec={ project, tester:plan.tester, title:plan.title, start:plan.start, duration_min:plan.duration_min, trials:session.zs.length, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:twoSidedP(cumZ), source:'QRNG proxy' };
+    await dbInsert(rec);
+    const rows=await dbFetch(); renderTable(rows);
+  }catch(e){
+    console.error('Session error', e);
     alert('Could not compute. Try again.');
   }finally{
-    lockUI(false); session=null; clearInterval(timerId); setElapsed(0);
+    stopElapsed(); lockUI(false); session=null;
   }
 }
-document.getElementById('startBtn').addEventListener('click', async ()=>{
-  if(session) return; // debounce
-  await coreSession();
-});
-document.getElementById('stopBtn').addEventListener('click',()=>{ if(session){ session.stop=true; }});
 
-// ===== Boot =====
+startBtn.addEventListener('click', ()=>{ if(session) return; runSession(); });
+stopBtn.addEventListener('click', ()=>{ if(session) session.stop=true; });
+
 async function boot(){
-  await renderTable();
   clearPlot(); drawAxes();
-  if('serviceWorker' in navigator){ navigator.serviceWorker.register('service-worker.js'); }
+  const rows=await dbFetch(); renderTable(rows);
 }
 boot();
 </script>
