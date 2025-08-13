@@ -1,1 +1,1 @@
-self.addEventListener('install',e=>{e.waitUntil(caches.open('coherence-app-only').then(c=>c.addAll(['./','./index.html','./manifest.json'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))})
+const C='coherence-app-only-v1011';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./','./index.html?v=1011','./manifest.json?v=1011'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))})

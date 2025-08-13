@@ -1,7 +1,7 @@
 {
   "name": "Group Coherence Lab",
   "short_name": "Coherence",
-  "start_url": "./index.html",
+  "start_url": "./index.html?v=1011",
   "display": "standalone",
   "background_color": "#0f1120",
   "theme_color": "#88eeff",
