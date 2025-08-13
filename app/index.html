@@ -5,7 +5,6 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Group Coherence Lab</title>
-  <link rel="manifest" href="manifest.json?v=1011"/>
   <meta name="theme-color" content="#88eeff"/>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -114,27 +113,30 @@
 </div>
 
 <script>
-// Hardcoded Supabase
+// --- Unregister any old service worker to avoid caching issues ---
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+  if (window.caches && caches.keys) {
+    caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+  }
+}
+
+// --- Supabase hardcoded ---
 const SUPABASE_URL = "https://wyecvewtlgyzizupocfh.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZWN2ZXd0bGd5eml6dXBvY2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTYzODcsImV4cCI6MjA3MDY5MjM4N30.nfcrwzm1t-d5l3DiME5RFahC_LVxStn0IekaPjMKMpg";
 const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// Project lock: always respect ?project= on load
-function applyProjectLock(){
-  const params=new URLSearchParams(location.search);
-  const p = params.get('project');
-  const current = localStorage.getItem('project_code');
-  if (p && p !== current) {
+// --- Project from URL ALWAYS wins ---
+function getProject(){
+  const urlP = new URLSearchParams(location.search).get('project');
+  if (urlP && urlP.trim()) {
+    const p = urlP.trim();
     localStorage.setItem('project_code', p);
     localStorage.setItem('project_locked', '1');
-  } else if (!current) {
-    localStorage.setItem('project_code', p || 'default');
-    localStorage.setItem('project_locked','1');
+    return p;
   }
-  const code = localStorage.getItem('project_code') || 'default';
-  document.getElementById('projectBadge').textContent = 'Project: ' + code + ' (locked)';
+  return localStorage.getItem('project_code') || 'default';
 }
-applyProjectLock();
 
 // Helpers
 function erf(x){const s=x>=0?1:-1; x=Math.abs(x); const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911; const t=1/(1+p*x); const y=1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x); return s*y;}
@@ -169,19 +171,18 @@ function plotSeries(zs,alpha){
 }
 
 // Cloud
-async function dbFetch(){
-  const project = localStorage.getItem('project_code') || 'default';
+async function dbFetch(project){
   try {
     const { data, error } = await SB.from('sessions').select('*').eq('project', project).order('start', { ascending:false }).limit(500);
     if (error) throw error;
-    localStorage.setItem('sessions_cache', JSON.stringify(data||[]));
     return data || [];
   } catch (e) {
     console.warn('Supabase fetch error', e);
-    return JSON.parse(localStorage.getItem('sessions_cache')||'[]').filter(r=>r.project===project);
+    const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]');
+    return cache.filter(r=>r.project===project);
   }
 }
-async function dbInsert(rec){
+async function dbInsert(project, rec){
   try {
     const { error } = await SB.from('sessions').insert(rec);
     if (error) throw error;
@@ -190,39 +191,34 @@ async function dbInsert(rec){
   }
 }
 
-// UI refs
-const nameEl=document.getElementById('testerName'), titleEl=document.getElementById('sessionTitle'), durEl=document.getElementById('duration'), trialBitsEl=document.getElementById('trialBits'), alphaEl=document.getElementById('alpha');
-const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), clockEl=document.getElementById('clock'), elapsedEl=document.getElementById('elapsed');
-const tableEl=document.getElementById('table'), comboZEl=document.getElementById('comboZ'), exportCsvBtn=document.getElementById('exportCsv'), exportPdfBtn=document.getElementById('exportPdf');
-const helpBtn=document.getElementById('helpBtn'), helpBackdrop=document.getElementById('helpBackdrop'), closeHelp=document.getElementById('closeHelp');
-
-helpBtn.addEventListener('click',()=> helpBackdrop.classList.remove('hidden'));
-closeHelp.addEventListener('click',()=> helpBackdrop.classList.add('hidden'));
-
 function renderTable(rows){
   const rowsHtml=rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td><td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td><td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td><td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td><td>${r.source}</td></tr>`).join('');
-  tableEl.innerHTML=`<table><thead><tr><th>#</th><th>Tester</th><th>Title</th><th>Start</th><th>Min</th><th>Tests</th><th>Bits/Trial</th><th>Alpha</th><th>Z</th><th>p</th><th>Source</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
-  const zs=rows.slice(0,30).map(r=>+r.z); comboZEl.textContent = (zs.length? (stoufferZ(zs).toFixed(3)) : '—');
+  document.getElementById('table').innerHTML=`<table><thead><tr><th>#</th><th>Tester</th><th>Title</th><th>Start</th><th>Min</th><th>Tests</th><th>Bits/Trial</th><th>Alpha</th><th>Z</th><th>p</th><th>Source</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
+  const zs=rows.slice(0,30).map(r=>+r.z); document.getElementById('comboZ').textContent = (zs.length? (stoufferZ(zs).toFixed(3)) : '—');
 }
-exportCsvBtn.addEventListener('click', async ()=>{
-  const s=await dbFetch(); const header=['project','tester','title','start','duration_min','trials','trial_bits','alpha','z','p','source'];
+
+// Exports
+document.getElementById('exportCsv').addEventListener('click', async ()=>{
+  const project=getProject(); const s=await dbFetch(project); const header=['project','tester','title','start','duration_min','trials','trial_bits','alpha','z','p','source'];
   const lines=[header.join(',')].concat(s.map(r=> header.map(k=> r[k]).join(',')));
   const blob=new Blob([lines.join('\n')],{type:'text/csv'}); const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='gclab_sessions.csv'; a.click(); URL.revokeObjectURL(url);
+  const a=document.createElement('a'); a.href=url; a.download=`gclab_sessions_${project}.csv`; a.click(); URL.revokeObjectURL(url);
 });
-exportPdfBtn.addEventListener('click', async ()=>{
-  const s=await dbFetch();
+document.getElementById('exportPdf').addEventListener('click', async ()=>{
+  const project=getProject(); const s=await dbFetch(project);
   const { jsPDF } = window.jspdf; const doc=new jsPDF({unit:'pt',format:'a4'});
   doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text('Group Coherence — All Sessions', 40, 40);
-  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text('Project: ' + (localStorage.getItem('project_code')||'default'), 40, 58);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text('Project: ' + project, 40, 58);
   const head=[['#','Tester','Title','Start','Min','Tests','Bits','Alpha','Z','p','Source']];
   const body = s.map((r,i)=>[i+1, r.tester||'', r.title||'', new Date(r.start).toLocaleString(), r.duration_min, r.trials, r.trial_bits, r.alpha, (+r.z).toFixed(3), (+r.p).toExponential(2), r.source]);
   doc.autoTable({ head, body, startY: 72, styles:{fontSize:9, cellPadding:3}, headStyles:{fillColor:[14,165,233]} });
-  doc.save('group_coherence_sessions.pdf');
+  doc.save(`group_coherence_sessions_${project}.pdf`);
 });
 
 // Session
 let session=null, elapsedTimer=null;
+const nameEl=document.getElementById('testerName'), titleEl=document.getElementById('sessionTitle'), durEl=document.getElementById('duration'), trialBitsEl=document.getElementById('trialBits'), alphaEl=document.getElementById('alpha');
+const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), clockEl=document.getElementById('clock'), elapsedEl=document.getElementById('elapsed');
 function lockUI(run){
   [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn].forEach(el=> el.disabled=run);
   stopBtn.disabled=!run; clockEl.textContent = run ? 'Running…' : 'Idle';
@@ -238,7 +234,7 @@ function startElapsed(){
 function stopElapsed(){ if(elapsedTimer){ clearInterval(elapsedTimer); elapsedTimer=null; }}
 
 async function runSession(){
-  const project = localStorage.getItem('project_code') || 'default';
+  const project = getProject();
   const plan={ tester:nameEl.value.trim()||'—', title:titleEl.value.trim(), duration_min:Math.max(1,parseInt(durEl.value||'10',10)), trial_bits:Math.max(50,parseInt(trialBitsEl.value||'200',10)), alpha:alphaEl.value, start:new Date().toISOString() };
   session={plan,zs:[],stop:false}; lockUI(true); clearPlot(); drawAxes(); startElapsed();
   const endTime=Date.now()+plan.duration_min*60*1000;
@@ -259,8 +255,8 @@ async function runSession(){
     }
     const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(Math.max(1,session.zs.length));
     const rec={ project, tester:plan.tester, title:plan.title, start:plan.start, duration_min:plan.duration_min, trials:session.zs.length, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:twoSidedP(cumZ), source:'QRNG proxy' };
-    await dbInsert(rec);
-    const rows=await dbFetch(); renderTable(rows);
+    await dbInsert(project, rec);
+    const rows=await dbFetch(project); renderTable(rows);
   }catch(e){
     console.error('Session error', e);
     alert('Could not compute. Try again.');
@@ -273,10 +269,10 @@ document.getElementById('startBtn').addEventListener('click', ()=>{ if(session) 
 document.getElementById('stopBtn').addEventListener('click', ()=>{ if(session) session.stop=true; });
 
 async function boot(){
-  // Re-apply project on boot in case SW served stale HTML
-  applyProjectLock();
+  const project = getProject();
+  document.getElementById('projectBadge').textContent = 'Project: ' + project + ' (locked)';
   clearPlot(); drawAxes();
-  const rows=await dbFetch(); renderTable(rows);
+  const rows=await dbFetch(project); renderTable(rows);
 }
 boot();
 </script>
