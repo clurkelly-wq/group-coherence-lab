@@ -18,13 +18,10 @@
     .wrap{max-width:980px;margin:0 auto;padding:0 16px 40px}
     .grid{display:grid;grid-template-columns:1fr;gap:16px}
     @media(min-width:1000px){.grid{grid-template-columns:1.2fr 1fr}}
-    .header-actions{position:absolute;right:8px;top:8px;display:flex;gap:8px}
-    @media(max-width:520px){.header-actions{position:static;justify-content:center;margin-top:8px}}
     .card{background:var(--panel);border:1px solid #262a43;border-radius:14px;padding:16px}
     .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
     input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:8px 10px;width:100%}
     .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     button{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
     button:disabled{opacity:.6;cursor:not-allowed}
     .pill{display:inline-block;padding:6px 10px;border:1px solid #2b3158;border-radius:999px;color:#e8ecff;font-size:12px;background:#1a2044}
@@ -33,51 +30,43 @@
     .stat{background:#0e1020;border:1px solid #22264a;border-radius:10px;padding:10px}
     .stat b{display:block;font-size:20px;margin-top:6px;color:#bfe6ff}
     table{width:100%;border-collapse:collapse}th,td{padding:6px 8px;border-bottom:1px solid #262a43;text-align:left}
-    a{color:var(--accent)}
     .ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158;padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer}
     .hidden{display:none!important}
+    .error{color:#ffbaba;background:#3b0f0f;border:1px solid #6b1d1d;padding:8px;border-radius:10px}
+    .debug{font-size:12px;color:#cde3ff;background:#0e1933;border:1px dashed #335; padding:10px;border-radius:10px}
   </style>
 </head>
 <body>
 <header>
-  <div class="header-actions">
-    <button id="helpBtn" class="ghost">Help</button>
-  </div>
   <h1>Group Coherence Lab</h1>
   <div class="subtitle">Testing how our consciousness affects a quantum random number generator</div>
 </header>
 
-<!-- Help modal -->
-<div id="helpBackdrop" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999">
-  <div class="card" style="width:min(720px,92vw)">
-    <h2 style="margin:0 0 8px 0;font-size:20px">What the numbers mean</h2>
-    <p><b>Big picture:</b> we flip lots of virtual coins from a real random source. If focus creates order, we sometimes see a gentle bias away from perfect 50/50.</p>
-    <ul>
-      <li><b>Overall Drift</b>: how far the run has wandered from pure chance so far. Around 0 is normal.</li>
-      <li><b>How Unusual?</b>: the odds that this much drift could happen just by chance. Smaller numbers = more unusual.</li>
-      <li><b>Number of Tests</b>: how many coin‑flip batches we’ve done in this session.</li>
-    </ul>
-    <div style="text-align:right"><button id="closeHelp" class="ghost">Close</button></div>
-  </div>
-</div>
-
 <div class="wrap">
   <div class="card" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between">
-    <div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <span class="pill" id="projectBadge">Project: —</span>
       <span class="pill" id="clock">Idle</span>
       <span class="pill" id="elapsed">Elapsed: 00:00</span>
     </div>
-    <div class="row3" style="gap:8px; flex: 1 1 auto; max-width: 540px">
-      <input id="testerName" placeholder="Tester name"/>
-      <input id="sessionTitle" placeholder="Session title"/>
-      <input id="duration" type="number" min="1" max="60" value="10" placeholder="Minutes"/>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <input id="projectInput" placeholder="Project code" style="width:200px"/>
+      <button id="applyProject" class="ghost">Apply</button>
+      <button id="helpBtn" class="ghost">Help</button>
     </div>
   </div>
 
+  <div id="debugPanel" class="card debug hidden"></div>
+  <div id="errPanel" class="card error hidden"></div>
+
   <div class="grid">
     <div class="card">
-      <div class="label">Session controls</div>
+      <div class="label">Session setup</div>
+      <div class="row3" style="margin-top:8px">
+        <div><div class="label">Tester name</div><input id="testerName" placeholder="e.g., Clare"/></div>
+        <div><div class="label">Session title</div><input id="sessionTitle" placeholder="e.g., Sunday Circle"/></div>
+        <div><div class="label">Duration (minutes)</div><input id="duration" type="number" min="1" max="60" value="10"/></div>
+      </div>
       <div class="row3" style="margin-top:8px">
         <div><div class="label">Trial size (bits)</div><input id="trialBits" type="number" min="50" max="2000" value="200"/></div>
         <div><div class="label">Alpha</div>
@@ -113,38 +102,47 @@
 </div>
 
 <script>
-// --- Unregister any old service worker to avoid caching issues ---
+// Kill any SW/caches
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
-  if (window.caches && caches.keys) {
-    caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
-  }
+  if (window.caches && caches.keys) { caches.keys().then(keys => keys.forEach(k => caches.delete(k))); }
 }
 
-// --- Supabase hardcoded ---
+// Supabase
 const SUPABASE_URL = "https://wyecvewtlgyzizupocfh.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZWN2ZXd0bGd5eml6dXBvY2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTYzODcsImV4cCI6MjA3MDY5MjM4N30.nfcrwzm1t-d5l3DiME5RFahC_LVxStn0IekaPjMKMpg";
 const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// --- Project from URL ALWAYS wins ---
-function getProject(){
-  const urlP = new URLSearchParams(location.search).get('project');
-  if (urlP && urlP.trim()) {
-    const p = urlP.trim();
-    localStorage.setItem('project_code', p);
-    localStorage.setItem('project_locked', '1');
-    return p;
-  }
-  return localStorage.getItem('project_code') || 'default';
+// Debug flag
+const DEBUG = new URLSearchParams(location.search).get('debug') === '1';
+function showDebug(info){
+  if(!DEBUG) return;
+  const el=document.getElementById('debugPanel'); el.classList.remove('hidden');
+  el.textContent = JSON.stringify(info, null, 2);
+}
+function showError(msg){
+  const el=document.getElementById('errPanel'); el.classList.remove('hidden'); el.textContent = msg;
 }
 
-// Helpers
-function erf(x){const s=x>=0?1:-1; x=Math.abs(x); const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911; const t=1/(1+p*x); const y=1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x); return s*y;}
-function cdfNormal(z){return .5*(1+erf(z/Math.SQRT2));}
-function twoSidedP(z){return 2*(1-cdfNormal(Math.abs(z)));}
-function stoufferZ(zs){if(!zs.length) return 0; const s=zs.reduce((a,b)=>a+b,0); return s/Math.sqrt(zs.length);}
+// Project handling
+function computeInitialProject(){
+  const urlP = new URLSearchParams(location.search).get('project');
+  if (urlP && urlP.trim()) return urlP.trim();
+  const stored = localStorage.getItem('project_code');
+  if (stored && stored.trim()) return stored.trim();
+  return 'clares-data';
+}
+function setProject(p){
+  const code = (p||'').trim() || 'clares-data';
+  localStorage.setItem('project_code', code);
+  localStorage.setItem('project_locked', '1');
+  document.getElementById('projectBadge').textContent = 'Project: ' + code + ' (locked)';
+  document.getElementById('projectInput').value = code;
+  return code;
+}
+function getProject(){ return localStorage.getItem('project_code') || 'clares-data'; }
 
-// RNG via Netlify function
+// RNG via Netlify Function
 async function qrng(len){
   const r = await fetch(`/.netlify/functions/qrng?len=${len}`, { mode:'cors' });
   if(!r.ok) throw new Error('qrng failed');
@@ -153,6 +151,12 @@ async function qrng(len){
   const note=document.getElementById('sourceNote'); if(note) note.textContent = 'Active source: ' + (j.source || 'Unknown');
   return new Uint16Array(arr.map(x=>x&0xFFFF));
 }
+
+// Stats helpers
+function erf(x){const s=x>=0?1:-1; x=Math.abs(x); const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911; const t=1/(1+p*x); const y=1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x); return s*y;}
+function cdfNormal(z){return .5*(1+erf(z/Math.SQRT2));}
+function twoSidedP(z){return 2*(1-cdfNormal(Math.abs(z)));}
+function stoufferZ(zs){if(!zs.length) return 0; const s=zs.reduce((a,b)=>a+b,0); return s/Math.sqrt(zs.length);}
 
 // Plot
 const canvas=document.getElementById('plot'); const ctx=canvas.getContext('2d');
@@ -170,14 +174,14 @@ function plotSeries(zs,alpha){
   ctx.beginPath();ctx.moveTo(x(0),y(cums[0]||0)); for(let i=1;i<n;i++){ctx.lineTo(x(i),y(cums[i]));} ctx.stroke();
 }
 
-// Cloud
+// DB
 async function dbFetch(project){
   try {
     const { data, error } = await SB.from('sessions').select('*').eq('project', project).order('start', { ascending:false }).limit(500);
     if (error) throw error;
     return data || [];
   } catch (e) {
-    console.warn('Supabase fetch error', e);
+    showError('Supabase read failed: ' + e.message);
     const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]');
     return cache.filter(r=>r.project===project);
   }
@@ -187,10 +191,12 @@ async function dbInsert(project, rec){
     const { error } = await SB.from('sessions').insert(rec);
     if (error) throw error;
   } catch (e) {
+    showError('Supabase write failed (saved locally): ' + e.message);
     const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]'); s.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(s));
   }
 }
 
+// Table
 function renderTable(rows){
   const rowsHtml=rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td><td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td><td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td><td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td><td>${r.source}</td></tr>`).join('');
   document.getElementById('table').innerHTML=`<table><thead><tr><th>#</th><th>Tester</th><th>Title</th><th>Start</th><th>Min</th><th>Tests</th><th>Bits/Trial</th><th>Alpha</th><th>Z</th><th>p</th><th>Source</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
@@ -219,8 +225,9 @@ document.getElementById('exportPdf').addEventListener('click', async ()=>{
 let session=null, elapsedTimer=null;
 const nameEl=document.getElementById('testerName'), titleEl=document.getElementById('sessionTitle'), durEl=document.getElementById('duration'), trialBitsEl=document.getElementById('trialBits'), alphaEl=document.getElementById('alpha');
 const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), clockEl=document.getElementById('clock'), elapsedEl=document.getElementById('elapsed');
+
 function lockUI(run){
-  [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn].forEach(el=> el.disabled=run);
+  [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn,document.getElementById('projectInput'),document.getElementById('applyProject')].forEach(el=> el.disabled=run);
   stopBtn.disabled=!run; clockEl.textContent = run ? 'Running…' : 'Idle';
 }
 function startElapsed(){
@@ -258,23 +265,55 @@ async function runSession(){
     await dbInsert(project, rec);
     const rows=await dbFetch(project); renderTable(rows);
   }catch(e){
-    console.error('Session error', e);
-    alert('Could not compute. Try again.');
+    showError('Session compute failed: ' + e.message);
   }finally{
     stopElapsed(); lockUI(false); session=null;
   }
 }
 
-document.getElementById('startBtn').addEventListener('click', ()=>{ if(session) return; runSession(); });
-document.getElementById('stopBtn').addEventListener('click', ()=>{ if(session) session.stop=true; });
+// Apply project button
+document.getElementById('applyProject').addEventListener('click', ()=>{
+  const p = document.getElementById('projectInput').value;
+  const code = setProject(p);
+  refreshTable(code);
+});
+document.getElementById('projectInput').addEventListener('keydown', (e)=>{
+  if(e.key==='Enter'){ const code=setProject(e.target.value); refreshTable(code); }
+});
 
+async function refreshTable(project){
+  try{
+    const rows=await dbFetch(project);
+    renderTable(rows);
+    showDebug({project, rows: rows.length, sourceNote: document.getElementById('sourceNote')?.textContent || ''});
+  }catch(e){
+    showError('Refresh failed: ' + e.message);
+  }
+}
+
+// Boot
 async function boot(){
-  const project = getProject();
-  document.getElementById('projectBadge').textContent = 'Project: ' + project + ' (locked)';
-  clearPlot(); drawAxes();
-  const rows=await dbFetch(project); renderTable(rows);
+  try{
+    const initial = computeInitialProject();
+    const code = setProject(initial);
+    clearPlot(); drawAxes();
+    await refreshTable(code);
+    // Fill project input explicitly
+    document.getElementById('projectInput').value = code;
+    // Help modal wires
+    const helpBtn=document.getElementById('helpBtn');
+    const helpBackdrop=document.createElement('div');
+    helpBackdrop.className='card'; helpBackdrop.style.marginTop='10px'; helpBackdrop.innerHTML='<b>Tip:</b> Add <code>?debug=1</code> to the URL to show debug info below.';
+    if (DEBUG) document.querySelector('.wrap').insertBefore(helpBackdrop, document.querySelector('.wrap').children[1]);
+  }catch(e){
+    showError('Boot failed: ' + e.message);
+  }
 }
 boot();
+
+// Plot wiring
+document.getElementById('startBtn').addEventListener('click', ()=>{ if(session) return; runSession(); });
+document.getElementById('stopBtn').addEventListener('click', ()=>{ if(session) session.stop=true; });
 </script>
 </body>
 </html>
