@@ -7,8 +7,7 @@
   <title>Group Coherence Lab</title>
   <meta name="theme-color" content="#88eeff"/>
   <style>
-    :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#88eeff;
-            --ok:#34d399; --warn:#f59e0b; --strong:#10b981; --extra:#a78bfa; --normal:#64748b; }
+    :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#88eeff; }
     html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
     header{padding:16px 16px 8px;text-align:center}
     h1{margin:0;font-size:22px;letter-spacing:.5px}
@@ -21,11 +20,7 @@
     .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
     input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:8px 10px;width:100%}
     .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media(max-width:640px){
-      .row3{grid-template-columns:1fr}
-      .row2{grid-template-columns:1fr}
-    }
+    @media(max-width:640px){.row3{grid-template-columns:1fr}}
     button{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
     button.ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158}
     button:disabled{opacity:.6;cursor:not-allowed}
@@ -51,8 +46,6 @@
     .topcard{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
     .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
     .flexgap{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-
-    /* Help modal */
     .overlay{position:fixed;inset:0;background:rgba(0,0,20,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
     .modal{background:#0f1328;border:1px solid #2b3158;border-radius:16px;max-width:860px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
     .modal header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #24304f}
@@ -68,10 +61,11 @@
     .muted{color:#93a0c7}
     .ytwrap{position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;border:1px solid #24304f;background:#000}
     .ytwrap iframe{position:absolute;inset:0;width:100%;height:100%}
+    .debug{font-size:11px;color:#9cc1ff;margin-top:8px}
   </style>
 
-  <!-- Early project resolver -->
   <script>
+    // Early project & version
     (function(){
       try {
         const params = new URLSearchParams(location.search);
@@ -79,9 +73,9 @@
         const project = urlProj || (localStorage.getItem('project_code')||'').trim() || 'clares-data';
         localStorage.setItem('project_code', project);
         localStorage.setItem('project_locked','1');
-        window.__GCLAB__ = { version:'v10.2.3', project, lastError:'', rows:undefined };
+        window.__GCLAB__ = { version:'v10.2.4', project, lastError:'', rows:undefined };
       } catch(e){
-        window.__GCLAB__ = { version:'v10.2.3', project:'clares-data', lastError:'(init) '+(e.message||e), rows:undefined };
+        window.__GCLAB__ = { version:'v10.2.4', project:'clares-data', lastError:'(init) '+(e.message||e), rows:undefined };
       }
     })();
   </script>
@@ -92,7 +86,7 @@
   <div class="subtitle">Testing how our consciousness affects a quantum random number generator</div>
 </header>
 
-<div class="statusbar" id="statusbar">v10.2.3 • Project: loading… • Rows: — • Last error: —</div>
+<div class="statusbar" id="statusbar">v10.2.4 • Project: loading… • Rows: — • Last error: —</div>
 
 <div class="wrap">
   <div class="card topcard">
@@ -108,6 +102,7 @@
   </div>
 
   <div id="errPanel" class="error hidden"></div>
+  <div id="dbg" class="debug"></div>
 
   <div class="grid">
     <div class="card">
@@ -202,56 +197,49 @@
 </div>
 
 <script>
-// Prime status
-(function primeStatus(){
-  const S = window.__GCLAB__ || {version:'v10.2.3', project:'clares-data'};
-  const status = document.getElementById('statusbar');
-  status.textContent = `${S.version} • Project: ${S.project} • Rows: — • Last error: ${S.lastError||'—'}`;
-  document.getElementById('projectBadge').textContent = 'Project: ' + S.project + ' (locked)';
-  document.getElementById('projectInput').value = S.project;
-  document.getElementById('clock').textContent = 'Idle';
+// Prime status + debug capture
+(function(){
+  const S = window.__GCLAB__ || {version:'v10.2.4', project:'clares-data'};
+  function setStatus(rows, err){
+    const rowsText = (rows === undefined || rows === null) ? '—' : rows;
+    const s = document.getElementById('statusbar');
+    s.textContent = `${S.version} • Project: ${S.project} • Rows: ${rowsText} • Last error: ${err || '—'}`;
+    if (err){ const e=document.getElementById('errPanel'); e.textContent=err; e.classList.remove('hidden'); }
+  }
+  window.__setStatus = setStatus;
+  // Pipe errors to status
+  window.addEventListener('error', (ev)=> setStatus(undefined, ev.message||'Script error'));
+  window.addEventListener('unhandledrejection', (ev)=> setStatus(undefined, (ev.reason&&ev.reason.message)||String(ev.reason)));
+  const dbg = document.getElementById('dbg');
+  const origLog = console.log, origErr = console.error;
+  console.log = function(...args){ origLog.apply(console,args); try{ dbg.textContent = (dbg.textContent||'') + '\\n' + args.join(' ');}catch(_){} };
+  console.error = function(...args){ origErr.apply(console,args); try{ dbg.textContent = (dbg.textContent||'') + '\\nERR: ' + args.join(' ');}catch(_){}; setStatus(undefined, args[0]&&args[0].message?args[0].message:String(args[0])); };
 })();
-
-// Remove service worker/caches
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
-  if (window.caches && caches.keys) { caches.keys().then(keys => keys.forEach(k => caches.delete(k))); }
-}
-
-// Help modal wiring
-const helpBtn = document.getElementById('helpBtn');
-const helpOverlay = document.getElementById('helpOverlay');
-const closeHelp = document.getElementById('closeHelp');
-helpBtn.addEventListener('click', ()=>{ helpOverlay.style.display='flex'; });
-closeHelp.addEventListener('click', ()=>{ helpOverlay.style.display='none'; });
-helpOverlay.addEventListener('click', (e)=>{ if(e.target===helpOverlay){ helpOverlay.style.display='none'; } });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <script>
-// Supabase
+// Guards for libraries
+if (!window.supabase) { __setStatus(undefined, 'Supabase library failed to load'); }
+if (!window.jspdf) { console.log('jsPDF failed to load'); }
+
+// Supabase setup
 const SUPABASE_URL = "https://wyecvewtlgyzizupocfh.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZWN2ZXd0bGd5eml6dXBvY2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTYzODcsImV4cCI6MjA3MDY5MjM4N30.nfcrwzm1t-d5l3DiME5RFahC_LVxStn0IekaPjMKMpg";
-const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+let SB = null;
+try { SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON); }
+catch(e){ __setStatus(undefined, 'Supabase init error: '+(e.message||e)); }
 
-// Status helper
-function setStatus(rows, err){
-  const S = window.__GCLAB__ || { version:'v10.2.3', project:'clares-data' };
-  const rowsText = (rows === undefined || rows === null) ? '—' : rows;
-  const s = document.getElementById('statusbar');
-  s.textContent = `${S.version} • Project: ${S.project} • Rows: ${rowsText} • Last error: ${err || '—'}`;
-  if (err){ const e=document.getElementById('errPanel'); e.textContent=err; e.classList.remove('hidden'); }
-}
 function getProject(){ return (window.__GCLAB__ && window.__GCLAB__.project) || 'clares-data'; }
 
-// Stats helpers
+// Simple math helpers
 function erf(x){const s=x>=0?1:-1; x=Math.abs(x); const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911; const t=1/(1+p*x); const y=1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x); return s*y;}
 function cdfNormal(z){return .5*(1+erf(z/Math.SQRT2));}
 function twoSidedP(z){return 2*(1-cdfNormal(Math.abs(z)));}
 function stoufferZ(zs){if(!zs.length) return 0; const s=zs.reduce((a,b)=>a+b,0); return s/Math.sqrt(zs.length);}
 
-// Effect labelling
+// Effect labels
 function effectLabel(p, alpha){
   const a = parseFloat(alpha||'0.05');
   if (!isFinite(p)) return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
@@ -260,25 +248,9 @@ function effectLabel(p, alpha){
   if (p <= a) return {cls:'possible', text:'Small shift detected — possible group influence.', tier:'Possible'};
   return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
 }
-function badgeHtml(tier){
-  const cls = (tier||'Normal').toLowerCase();
-  return `<span class="badge ${cls}">${tier}</span>`;
-}
-function setLiveEffect(p, alpha){
-  const info = effectLabel(p,alpha);
-  const el=document.getElementById('liveEffect');
-  el.className='effect '+info.cls;
-  el.textContent=info.text;
-  return info.tier;
-}
-function setFinalEffect(p, alpha){
-  const info=effectLabel(p,alpha);
-  const el=document.getElementById('finalEffect');
-  el.className='effect '+info.cls;
-  el.textContent='Session complete — '+info.text.replace(/^No unusual pattern detected — /,'').replace(/ — .*$/,'').replace(/^/,'').trim() || info.text;
-  document.getElementById('finalCard').style.display='block';
-  return info.tier;
-}
+function badgeHtml(tier){ const cls=(tier||'Normal').toLowerCase(); return `<span class="badge ${cls}">${tier}</span>`; }
+function setLiveEffect(p, alpha){ const info=effectLabel(p,alpha); const el=document.getElementById('liveEffect'); el.className='effect '+info.cls; el.textContent=info.text; return info.tier; }
+function setFinalEffect(p, alpha){ const info=effectLabel(p,alpha); const el=document.getElementById('finalEffect'); el.className='effect '+info.cls; el.textContent='Session complete — '+info.text; document.getElementById('finalCard').style.display='block'; return info.tier; }
 
 // Plot
 const canvas=document.getElementById('plot'); const ctx=canvas.getContext('2d');
@@ -296,64 +268,48 @@ function plotSeries(zs,alpha){
   ctx.beginPath();ctx.moveTo(x(0),y(cums[0]||0)); for(let i=1;i<n;i++){ctx.lineTo(x(i),y(cums[i]));} ctx.stroke();
 }
 
-// DB
+// DB helpers
 async function dbFetch(project){
+  if (!SB) { __setStatus(undefined, 'Supabase not initialized'); return []; }
   try {
     const { data, error } = await SB.from('sessions').select('*').eq('project', project).order('start', { ascending:false }).limit(500);
     if (error) throw error;
-    setStatus((data||[]).length, '');
+    __setStatus((data||[]).length, '');
     return data || [];
   } catch (e) {
-    setStatus(undefined, e.message || String(e));
+    console.error('Supabase read failed:', e);
     const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]');
     return cache.filter(r=>r.project===project);
   }
 }
 async function dbInsert(project, rec){
+  if (!SB) { __setStatus(undefined, 'Supabase not initialized'); return; }
   try {
     const { error } = await SB.from('sessions').insert(rec);
     if (error) throw error;
   } catch (e) {
-    // Fallback if effect_label column doesn't exist yet: try without it
-    if (String(e.message||'').toLowerCase().includes('column') && String(e.message||'').toLowerCase().includes('effect_label')) {
-      const rec2 = Object.assign({}, rec);
-      delete rec2.effect_label;
-      try { await SB.from('sessions').insert(rec2); }
-      catch (e2) { console.error('Insert fallback also failed', e2); }
-      setStatus(undefined, 'Note: effect_label column missing; added row without it.');
+    if (String(e.message||'').toLowerCase().includes('effect_label')){
+      const rec2 = Object.assign({}, rec); delete rec2.effect_label;
+      try { await SB.from('sessions').insert(rec2); } catch(e2){ console.error('Insert fallback also failed', e2); }
+      __setStatus(undefined, 'Note: effect_label missing; saved without it.');
     } else {
+      console.error('Supabase write failed:', e);
       const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]'); s.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(s));
-      setStatus(undefined, e.message || String(e));
     }
   }
 }
 
-// Table
-function renderTable(rows){
-  const body=document.getElementById('resultsBody');
-  body.innerHTML = rows.map((r,i)=>{
-    const tier = r.effect_label || '';
-    return `<tr>
-      <td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td>
-      <td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td>
-      <td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td>
-      <td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td>
-      <td>${tier ? ('${''}'+badgeHtml(tier)) : ''}</td>
-    </tr>`;
-  }).join('');
-  const zs=rows.slice(0,30).map(r=>+r.z); document.getElementById('comboZ').textContent = (zs.length? (stoufferZ(zs).toFixed(3)) : '—');
-}
-
 // Exports
-document.getElementById('exportCsv').addEventListener('click', async ()=>{
+async function exportCsv(){
   const project=getProject(); const s=await dbFetch(project);
   const header=['project','tester','title','start','duration_min','trials','trial_bits','alpha','z','p','effect_label'];
   const lines=[header.join(',')].concat(s.map(r=> header.map(k=> r[k]).join(',')));
   const blob=new Blob([lines.join('\n')],{type:'text/csv'}); const url=URL.createObjectURL(blob);
   const a=document.createElement('a'); a.href=url; a.download=`gclab_sessions_${project}.csv`; a.click(); URL.revokeObjectURL(url);
-});
-document.getElementById('exportPdf').addEventListener('click', async ()=>{
+}
+async function exportPdf(){
   const project=getProject(); const s=await dbFetch(project);
+  if (!window.jspdf) { __setStatus(undefined, 'PDF library not loaded'); return; }
   const { jsPDF } = window.jspdf; const doc=new jsPDF({unit:'pt',format:'a4'});
   doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text('Group Coherence — All Sessions', 40, 40);
   doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text('Project: ' + project, 40, 58);
@@ -361,7 +317,7 @@ document.getElementById('exportPdf').addEventListener('click', async ()=>{
   const body = s.map((r,i)=>[i+1, r.tester||'', r.title||'', new Date(r.start).toLocaleString(), r.duration_min, r.trials, r.trial_bits, r.alpha, (+r.z).toFixed(3), (+r.p).toExponential(2), r.effect_label||'']);
   doc.autoTable({ head, body, startY: 72, styles:{fontSize:9, cellPadding:3}, headStyles:{fillColor:[14,165,233]} });
   doc.save(`group_coherence_sessions_${project}.pdf`);
-});
+}
 
 // RNG via Netlify Function
 async function qrng(len){
@@ -420,11 +376,35 @@ async function runSession(){
     await dbInsert(project, rec);
     const rows=await dbFetch(project); renderTable(rows);
   }catch(e){
-    setStatus(undefined, e.message || String(e));
+    console.error('Session error:', e);
   }finally{
     stopElapsed(); lockUI(false); session=null;
   }
 }
+
+// Table render
+function renderTable(rows){
+  const body=document.getElementById('resultsBody');
+  body.innerHTML = rows.map((r,i)=>{
+    const tier = r.effect_label || '';
+    return `<tr>
+      <td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td>
+      <td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td>
+      <td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td>
+      <td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td>
+      <td>${tier ? ('${''}'+badgeHtml(tier)) : ''}</td>
+    </tr>`;
+  }).join('');
+  const zs=rows.slice(0,30).map(r=>+r.z); document.getElementById('comboZ').textContent = (zs.length? (stoufferZ(zs).toFixed(3)) : '—');
+}
+
+// Help modal wiring
+const helpBtn = document.getElementById('helpBtn');
+const helpOverlay = document.getElementById('helpOverlay');
+const closeHelp = document.getElementById('closeHelp');
+helpBtn.addEventListener('click', ()=>{ helpOverlay.style.display='flex'; });
+closeHelp.addEventListener('click', ()=>{ helpOverlay.style.display='none'; });
+helpOverlay.addEventListener('click', (e)=>{ if(e.target===helpOverlay){ helpOverlay.style.display='none'; } });
 
 // Apply project switcher
 document.getElementById('applyProject').addEventListener('click', ()=>{
@@ -433,25 +413,41 @@ document.getElementById('applyProject').addEventListener('click', ()=>{
   localStorage.setItem('project_locked','1');
   window.__GCLAB__.project = val;
   document.getElementById('projectBadge').textContent = 'Project: ' + val + ' (locked)';
-  setStatus(undefined,'');
+  __setStatus(undefined,'');
   refreshTable();
 });
+
+// Export buttons
+document.getElementById('exportCsv').addEventListener('click', exportCsv);
+document.getElementById('exportPdf').addEventListener('click', exportPdf);
+
+// Boot
+(function boot(){
+  const S = window.__GCLAB__ || {version:'v10.2.4', project:'clares-data'};
+  document.getElementById('statusbar').textContent = `${S.version} • Project: ${S.project} • Rows: — • Last error: —`;
+  document.getElementById('projectBadge').textContent = 'Project: ' + S.project + ' (locked)';
+  document.getElementById('projectInput').value = S.project;
+  document.getElementById('clock').textContent = 'Idle';
+  try{
+    clearPlot(); drawAxes();
+  }catch(e){ console.error('Plot init error', e); }
+  refreshTable();
+})();
 
 async function refreshTable(){
   const rows = await dbFetch(getProject());
   renderTable(rows);
 }
 
-// Boot
-async function boot(){
-  clearPlot(); drawAxes();
-  await refreshTable();
-}
-boot();
-
 // Buttons
 document.getElementById('startBtn').addEventListener('click', ()=>{ if(session) return; runSession(); });
 document.getElementById('stopBtn').addEventListener('click', ()=>{ if(session) session.stop=true; });
+
+// Service worker cleanup (last)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+  if (window.caches && caches.keys) { caches.keys().then(keys => keys.forEach(k => caches.delete(k))); }
+}
 </script>
 </body>
 </html>
