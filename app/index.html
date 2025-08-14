@@ -5,30 +5,28 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Group Coherence Lab</title>
-  <meta name="theme-color" content="#88eeff"/>
+  <meta name="theme-color" content="#38bdf8"/>
   <style>
-    :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#88eeff;
+    :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#38bdf8;
             --ok:#34d399; --warn:#f59e0b; --strong:#10b981; --extra:#a78bfa; --normal:#64748b; }
     html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    header{padding:16px 16px 8px;text-align:center}
-    h1{margin:0;font-size:22px;letter-spacing:.5px}
-    .subtitle{color:#93a0c7;font-size:13px;margin-top:4px}
-    .statusbar{font-size:12px;color:#cde3ff;background:#0e1933;border-top:1px solid #2b3158;border-bottom:1px solid #2b3158;padding:8px 16px;text-align:center}
-    .wrap{max-width:980px;margin:0 auto;padding:12px 16px 40px}
-    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    header{padding:18px 16px 6px;text-align:center}
+    h1{margin:0;font-size:24px;letter-spacing:.4px}
+    .subtitle{color:#93a0c7;font-size:13px;margin-top:6px}
+    .wrap{max-width:980px;margin:0 auto;padding:16px}
+    .grid{display:grid;grid-template-columns:1fr;gap:18px}
     @media(min-width:1000px){.grid{grid-template-columns:1.2fr 1fr}}
-    .card{background:var(--panel);border:1px solid #262a43;border-radius:14px;padding:16px}
+    .card{background:var(--panel);border:1px solid #262a43;border-radius:14px;padding:18px}
     .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
-    input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:8px 10px;width:100%}
-    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media(max-width:640px){
-      .row3{grid-template-columns:1fr}
-      .row2{grid-template-columns:1fr}
-    }
-    button{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+    input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:12px 12px;width:100%;font-size:14px}
+    .row3{display:grid;grid-template-columns:1fr;gap:14px;margin-top:12px}
+    @media(min-width:680px){.row3{grid-template-columns:1fr 1fr 1fr}}
+    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    .spacer{height:8px}
+    button{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:14px;padding:14px 18px;font-weight:800;cursor:pointer;font-size:16px}
     button.ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158}
     button:disabled{opacity:.6;cursor:not-allowed}
+    .btn-lg{padding:16px 22px;font-size:18px;border-radius:16px}
     .pill{display:inline-block;padding:6px 10px;border:1px solid #2b3158;border-radius:999px;color:#e8ecff;font-size:12px;background:#1a2044}
     .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px;white-space:nowrap}
     .badge.normal{background:#111827;color:#cbd5e1;border:1px solid #374151}
@@ -41,17 +39,14 @@
     .effect.strong{background:#042f2e;color:#a7f3d0;border:1px solid #065f46}
     .effect.extra{background:#1e1b4b;color:#ddd6fe;border:1px solid #4c1d95}
     canvas{width:100%;height:260px;background:#0b0d1a;border:1px solid #22264a;border-radius:10px;display:block}
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
-    .stat{background:#0e1020;border:1px solid #22264a;border-radius:10px;padding:10px}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .stat{background:#0e1020;border:1px solid #22264a;border-radius:10px;padding:12px}
     .stat b{display:block;font-size:20px;margin-top:6px;color:#bfe6ff}
     .tablewrap{max-width:100%;overflow:auto;border:1px solid #262a43;border-radius:12px}
-    table{width:100%;border-collapse:collapse;min-width:820px}th,td{padding:8px 10px;border-bottom:1px solid #262a43;text-align:left}
+    table{width:100%;border-collapse:collapse;min-width:820px}th,td{padding:10px 12px;border-bottom:1px solid #262a43;text-align:left}
     .hidden{display:none!important}
     .error{color:#ffbaba;background:#3b0f0f;border:1px solid #6b1d1d;padding:8px;border-radius:10px;margin-top:10px}
-    .topcard{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-    .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    .flexgap{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-
+    .topbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-bottom:12px}
     /* Help modal */
     .overlay{position:fixed;inset:0;background:rgba(0,0,20,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
     .modal{background:#0f1328;border:1px solid #2b3158;border-radius:16px;max-width:860px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -68,21 +63,17 @@
     .muted{color:#93a0c7}
     .ytwrap{position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;border:1px solid #24304f;background:#000}
     .ytwrap iframe{position:absolute;inset:0;width:100%;height:100%}
-    .debug{margin-top:8px;font:12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;color:#9cc1ff;background:#0a1022;border:1px solid #233056;border-radius:10px;padding:8px;white-space:pre-wrap}
   </style>
 
-  <!-- Early project resolver -->
+  <!-- Early project resolver (URL param only; default to clares-data) -->
   <script>
     (function(){
       try {
         const params = new URLSearchParams(location.search);
-        const urlProj = (params.get('project')||'').trim();
-        const project = urlProj || (localStorage.getItem('project_code')||'').trim() || 'clares-data';
-        localStorage.setItem('project_code', project);
-        localStorage.setItem('project_locked','1');
-        window.__GCLAB__ = { version:'v10.2.6', project, lastError:'', rows:undefined };
+        const project = (params.get('project')||'').trim() || 'clares-data';
+        window.__GCLAB__ = { version:'v10.3.0', project };
       } catch(e){
-        window.__GCLAB__ = { version:'v10.2.6', project:'clares-data', lastError:'(init) '+(e.message||e), rows:undefined };
+        window.__GCLAB__ = { version:'v10.3.0', project:'clares-data' };
       }
     })();
   </script>
@@ -93,45 +84,34 @@
   <div class="subtitle">Testing how our consciousness affects a quantum random number generator</div>
 </header>
 
-<div class="statusbar" id="statusbar">v10.2.6 • Project: loading… • Rows: — • Last error: —</div>
-
 <div class="wrap">
-  <div class="card topcard">
-    <div class="flexgap">
-      <span class="pill" id="projectBadge">Project: —</span>
-      <span class="pill" id="clock">Idle</span>
-    </div>
-    <div class="controls">
-      <button id="helpBtn" class="ghost">Help</button>
-      <input id="projectInput" placeholder="Project code" style="width:200px"/>
-      <button id="applyProject" class="ghost">Apply</button>
-      <button id="reloadBtn" class="ghost">Force Reload</button>
-    </div>
+  <div class="topbar">
+    <button id="helpBtn" class="btn-lg" title="Help">Help</button>
   </div>
 
   <div id="errPanel" class="error hidden"></div>
-  <div id="debug" class="debug hidden"></div>
 
   <div class="grid">
     <div class="card">
       <div class="label">Session setup</div>
-      <div class="row3" style="margin-top:8px">
+      <div class="row3">
         <div><div class="label">Tester name</div><input id="testerName" placeholder="e.g., Clare"/></div>
         <div><div class="label">Session title</div><input id="sessionTitle" placeholder="e.g., Sunday Circle"/></div>
         <div><div class="label">Duration (minutes)</div><input id="duration" type="number" min="1" max="60" value="10"/></div>
       </div>
-      <div class="row3" style="margin-top:8px">
+      <div class="row3">
         <div><div class="label">Trial size (bits)</div><input id="trialBits" type="number" min="50" max="2000" value="200"/></div>
         <div><div class="label">Alpha</div>
           <select id="alpha"><option value="0.05" selected>0.05 (95%)</option><option value="0.01">0.01 (99%)</option></select>
         </div>
         <div class="controls" style="align-items:flex-end">
-          <button id="startBtn">Start</button>
-          <button id="stopBtn" disabled>End</button>
+          <button id="startBtn" class="btn-lg">Start</button>
+          <button id="stopBtn" class="btn-lg" disabled>End</button>
           <span class="pill" id="elapsed">Elapsed: 00:00</span>
         </div>
       </div>
-      <div style="margin-top:10px">
+      <div class="spacer"></div>
+      <div>
         <span id="liveEffect" class="effect normal">No unusual pattern detected — randomness looks normal.</span>
       </div>
     </div>
@@ -205,28 +185,6 @@
 </div>
 
 <script>
-// Global error surfacing
-window.addEventListener('error', (e)=>{ try{ setStatus(undefined, e.message||String(e)); log('window error: '+(e.message||e)); }catch{} });
-window.addEventListener('unhandledrejection', (e)=>{ try{ setStatus(undefined, e.reason?.message||String(e.reason||e)); log('promise rejection: '+(e.reason?.message||e)); }catch{} });
-
-function log(msg){ const d=document.getElementById('debug'); d.classList.remove('hidden'); d.textContent += (d.textContent?'\n':'') + msg; }
-
-// Prime status
-(function primeStatus(){
-  const S = window.__GCLAB__ || {version:'v10.2.6', project:'clares-data'};
-  const status = document.getElementById('statusbar');
-  status.textContent = `${S.version} • Project: ${S.project} • Rows: — • Last error: ${S.lastError||'—'}`;
-  document.getElementById('projectBadge').textContent = 'Project: ' + S.project + ' (locked)';
-  document.getElementById('projectInput').value = S.project;
-  document.getElementById('clock').textContent = 'Idle';
-})();
-
-// Remove service worker/caches
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
-  if (window.caches && caches.keys) { caches.keys().then(keys => keys.forEach(k => caches.delete(k))); }
-}
-
 // Help modal wiring
 const helpBtn = document.getElementById('helpBtn');
 const helpOverlay = document.getElementById('helpOverlay');
@@ -234,41 +192,16 @@ const closeHelp = document.getElementById('closeHelp');
 helpBtn.addEventListener('click', ()=>{ helpOverlay.style.display='flex'; });
 closeHelp.addEventListener('click', ()=>{ helpOverlay.style.display='none'; });
 helpOverlay.addEventListener('click', (e)=>{ if(e.target===helpOverlay){ helpOverlay.style.display='none'; } });
-
-// Force reload
-document.getElementById('reloadBtn').addEventListener('click', ()=>{
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister())).finally(()=>{
-      if (window.caches && caches.keys) { caches.keys().then(keys => keys.forEach(k => caches.delete(k))).finally(()=> location.replace(location.pathname + '?project=' + encodeURIComponent(getProject()) + '&v=' + Date.now())); }
-      else location.replace(location.pathname + '?project=' + encodeURIComponent(getProject()) + '&v=' + Date.now());
-    });
-  } else {
-    location.replace(location.pathname + '?project=' + encodeURIComponent(getProject()) + '&v=' + Date.now());
-  }
-});
-
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <script>
-log('scripts loaded');
-
 // Supabase
 const SUPABASE_URL = "https://wyecvewtlgyzizupocfh.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZWN2ZXd0bGd5eml6dXBvY2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTYzODcsImV4cCI6MjA3MDY5MjM4N30.nfcrwzm1t-d5l3DiME5RFahC_LVxStn0IekaPjMKMpg";
-if (typeof supabase === 'undefined') { setStatus(undefined,'Supabase library failed to load'); log('supabase-js not found'); }
-const SB = (typeof supabase!=='undefined') ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
-if (SB) log('Supabase client created');
+const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// Status helper
-function setStatus(rows, err){
-  const S = window.__GCLAB__ || { version:'v10.2.6', project:'clares-data' };
-  const rowsText = (rows === undefined || rows === null) ? '—' : rows;
-  const s = document.getElementById('statusbar');
-  s.textContent = `${S.version} • Project: ${S.project} • Rows: ${rowsText} • Last error: ${err || '—'}`;
-  if (err){ const e=document.getElementById('errPanel'); e.textContent=err; e.classList.remove('hidden'); }
-}
 function getProject(){ return (window.__GCLAB__ && window.__GCLAB__.project) || 'clares-data'; }
 
 // Stats helpers
@@ -318,44 +251,34 @@ function plotSeries(zs,alpha){
   const ymax=Math.max(zStar*1.3, Math.max(...cums.map(v=>Math.abs(v)))+0.5);
   function x(i){return x0+(w*(i/(n-1||1)));} function y(v){return y0-(v/ymax)*(h/2);}
   ctx.strokeStyle='#2b3158';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y(zStar));ctx.lineTo(x0+w,y(zStar));ctx.stroke();ctx.beginPath();ctx.moveTo(x0,y(-zStar));ctx.lineTo(x0+w,y(-zStar));ctx.stroke();
-  ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#88eeff'; ctx.lineWidth=2;
+  ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#38bdf8'; ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(x(0),y(cums[0]||0)); for(let i=1;i<n;i++){ctx.lineTo(x(i),y(cums[i]));} ctx.stroke();
 }
 
 // DB
 async function dbFetch(project){
-  if(!SB){ setStatus(undefined,'Supabase not ready'); return []; }
   try {
     const { data, error } = await SB.from('sessions').select('*').eq('project', project).order('start', { ascending:false }).limit(500);
     if (error) throw error;
-    setStatus((data||[]).length, '');
-    log('Fetch OK • rows='+((data||[]).length));
     return data || [];
   } catch (e) {
-    setStatus(undefined, e.message || String(e));
-    log('Fetch ERR: '+(e.message||e));
     const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]');
     return cache.filter(r=>r.project===project);
   }
 }
 async function dbInsert(project, rec){
-  if(!SB){ setStatus(undefined,'Supabase not ready'); return; }
   try {
     const { error } = await SB.from('sessions').insert(rec);
     if (error) throw error;
-    log('Insert OK');
   } catch (e) {
     // Fallback if effect_label column doesn't exist yet: try without it
     if (String(e.message||'').toLowerCase().includes('column') && String(e.message||'').toLowerCase().includes('effect_label')) {
       const rec2 = Object.assign({}, rec);
       delete rec2.effect_label;
-      try { await SB.from('sessions').insert(rec2); log('Insert fallback OK (without effect_label)'); }
-      catch (e2) { log('Insert fallback ERR: '+(e2.message||e2)); }
-      setStatus(undefined, 'Note: effect_label column missing; added row without it.');
+      try { await SB.from('sessions').insert(rec2); }
+      catch (e2) {}
     } else {
       const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]'); s.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(s));
-      setStatus(undefined, e.message || String(e));
-      log('Insert ERR: '+(e.message||e));
     }
   }
 }
@@ -370,7 +293,7 @@ function renderTable(rows){
       <td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td>
       <td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td>
       <td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td>
-      <td>${tier ? badgeHtml(tier) : ''}</td>
+      <td>${tier ? ('${''}'+badgeHtml(tier)) : ''}</td>
     </tr>`;
   }).join('');
   const zs=rows.slice(0,30).map(r=>+r.z); document.getElementById('comboZ').textContent = (zs.length? (stoufferZ(zs).toFixed(3)) : '—');
@@ -407,11 +330,11 @@ async function qrng(len){
 // Session
 let session=null, elapsedTimer=null;
 const nameEl=document.getElementById('testerName'), titleEl=document.getElementById('sessionTitle'), durEl=document.getElementById('duration'), trialBitsEl=document.getElementById('trialBits'), alphaEl=document.getElementById('alpha');
-const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), clockEl=document.getElementById('clock'), elapsedEl=document.getElementById('elapsed');
+const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), elapsedEl=document.getElementById('elapsed');
 
 function lockUI(run){
-  [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn,document.getElementById('projectInput'),document.getElementById('applyProject')].forEach(el=> el.disabled=run);
-  stopBtn.disabled=!run; clockEl.textContent = run ? 'Running…' : 'Idle';
+  [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn].forEach(el=> el.disabled=run);
+  stopBtn.disabled=!run;
 }
 function startElapsed(){
   const t0=Date.now();
@@ -429,16 +352,9 @@ async function runSession(){
   session={plan,zs:[],stop:false}; lockUI(true); clearPlot(); drawAxes(); startElapsed();
   const endTime=Date.now()+plan.duration_min*60*1000;
   try{
-    // Ensure Start responsiveness (5-second minimal loop even if qrng fails)
     while(!session.stop && Date.now()<endTime){
-      let u16;
-      try{
-        const words=Math.ceil(plan.trial_bits/16);
-        u16=await qrng(Math.min(1024,words));
-      }catch(qe){
-        log('QRNG ERR: '+(qe.message||qe)+'. Using local PRNG fallback this tick.');
-        u16=new Uint16Array(plan.trial_bits); crypto.getRandomValues(u16);
-      }
+      const words=Math.ceil(plan.trial_bits/16);
+      const u16=await qrng(Math.min(1024,words));
       const bits=[]; for(let i=0;i<u16.length;i++){ let v=u16[i]; for(let b=0;b<16;b++){ bits.push((v>>b)&1); } }
       const trial=bits.slice(0,plan.trial_bits); const sum=trial.reduce((a,b)=>a+b,0);
       const n=plan.trial_bits, mu=n/2, sigma=Math.sqrt(n/4); const z=(sum-mu)/sigma;
@@ -451,7 +367,6 @@ async function runSession(){
       setLiveEffect(p, plan.alpha);
       plotSeries(session.zs, plan.alpha);
       await new Promise(r=> setTimeout(r,1000));
-      if (session.zs.length>=5) break; // keep UI snappy if user wants to end early
     }
     const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(Math.max(1,session.zs.length));
     const p = twoSidedP(cumZ);
@@ -460,23 +375,13 @@ async function runSession(){
     await dbInsert(project, rec);
     const rows=await dbFetch(project); renderTable(rows);
   }catch(e){
-    setStatus(undefined, e.message || String(e));
-    log('Session ERR: '+(e.message||e));
+    // silent in UI to avoid confusing users
   }finally{
     stopElapsed(); lockUI(false); session=null;
   }
 }
 
-// Apply project switcher
-document.getElementById('applyProject').addEventListener('click', ()=>{
-  const val = (document.getElementById('projectInput').value||'').trim() || 'clares-data';
-  localStorage.setItem('project_code', val);
-  localStorage.setItem('project_locked','1');
-  window.__GCLAB__.project = val;
-  document.getElementById('projectBadge').textContent = 'Project: ' + val + ' (locked)';
-  setStatus(undefined,'');
-  refreshTable();
-});
+// Apply: no project switcher UI — project only via URL
 
 async function refreshTable(){
   const rows = await dbFetch(getProject());
@@ -486,7 +391,6 @@ async function refreshTable(){
 // Boot
 async function boot(){
   clearPlot(); drawAxes();
-  // Ping fetch
   await refreshTable();
 }
 boot();
