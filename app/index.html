@@ -8,29 +8,28 @@
   <meta name="theme-color" content="#88eeff"/>
   <style>
     :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#38bdf8;
-            --ok:#34d399; --warn:#f59e0b; --strong:#10b981; --extra:#a78bfa; --normal:#64748b; }
+            --ok:#34d399; --warn:#f59e0b; --strong:#10b981; --extra:#a78bfa; --normal:#64748b; --red:#ef4444; }
     html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
     header{padding:16px 16px 8px;text-align:center}
     h1{margin:0;font-size:22px;letter-spacing:.5px}
-    .subtitle{color:#93a0c7;font-size:13px;margin-top:6px}
+    .subtitle{color:#93a0c7;font-size:13px;margin-top:4px}
     .wrap{max-width:980px;margin:0 auto;padding:12px 16px 40px}
     .grid{display:grid;grid-template-columns:1fr;gap:16px}
     @media(min-width:1000px){.grid{grid-template-columns:1.2fr 1fr}}
     .card{background:var(--panel);border:1px solid #262a43;border-radius:14px;padding:16px}
     .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
     input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:8px 10px;width:100%}
-    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:8px}
-    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     @media(max-width:640px){
       .row3{grid-template-columns:1fr}
       .row2{grid-template-columns:1fr}
     }
-    .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:12px}
-    button{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer;font-size:14px}
-    button.ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158}
-    button.help{background:linear-gradient(180deg,#38bdf8,#0ea5e9);color:#00111a}
-    button.danger{background:linear-gradient(180deg,#f87171,#ef4444);color:#1f0606}
-    button:disabled{opacity:.6;cursor:not-allowed}
+    .btn{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer;font-size:15px}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .btn.ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158}
+    .btn.red{background:linear-gradient(180deg,#ef4444,#dc2626);color:#fff}
+    .help{background:linear-gradient(180deg,#38bdf8,#0ea5e9);color:#00111a}
     .pill{display:inline-block;padding:6px 10px;border:1px solid #2b3158;border-radius:999px;color:#e8ecff;font-size:12px;background:#1a2044}
     .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px;white-space:nowrap}
     .badge.normal{background:#111827;color:#cbd5e1;border:1px solid #374151}
@@ -51,7 +50,9 @@
     .hidden{display:none!important}
     .error{color:#ffbaba;background:#3b0f0f;border:1px solid #6b1d1d;padding:8px;border-radius:10px;margin-top:10px}
     .topcard{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-    .muted{color:#93a0c7}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .flexgap{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
     /* Help modal */
     .overlay{position:fixed;inset:0;background:rgba(0,0,20,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
     .modal{background:#0f1328;border:1px solid #2b3158;border-radius:16px;max-width:860px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -65,10 +66,12 @@
     .swatch.yellow{background:#1f2937}
     .swatch.green{background:#064e3b}
     .swatch.purple{background:#312e81}
+    .muted{color:#93a0c7}
     .ytwrap{position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;border:1px solid #24304f;background:#000}
     .ytwrap iframe{position:absolute;inset:0;width:100%;height:100%}
   </style>
 
+  <!-- Early project resolver -->
   <script>
     (function(){
       try {
@@ -77,9 +80,9 @@
         const project = urlProj || (localStorage.getItem('project_code')||'').trim() || 'clares-data';
         localStorage.setItem('project_code', project);
         localStorage.setItem('project_locked','1');
-        window.__GCLAB__ = { version:'v10.3.3', project, lastError:'', rows:undefined };
+        window.__GCLAB__ = { version:'v10.4.0', project, lastError:'', rows:undefined };
       } catch(e){
-        window.__GCLAB__ = { version:'v10.3.3', project:'clares-data', lastError:'(init) '+(e.message||e), rows:undefined };
+        window.__GCLAB__ = { version:'v10.4.0', project:'clares-data', lastError:'(init) '+(e.message||e), rows:undefined };
       }
     })();
   </script>
@@ -91,8 +94,10 @@
 </header>
 
 <div class="wrap">
-  <div class="topcard">
-    <button id="helpBtn" class="help">What even is this?</button>
+  <div class="card topcard">
+    <div class="controls">
+      <button id="helpBtn" class="btn help">What even is this?</button>
+    </div>
   </div>
 
   <div id="errPanel" class="error hidden"></div>
@@ -100,25 +105,32 @@
   <div class="grid">
     <div class="card">
       <div class="label">Session setup</div>
-      <div class="row3">
+      <div class="row3" style="margin-top:8px">
         <div><div class="label">Tester name</div><input id="testerName" placeholder="e.g., Clare"/></div>
         <div><div class="label">Session title</div><input id="sessionTitle" placeholder="e.g., Sunday Circle"/></div>
         <div><div class="label">Duration (minutes)</div><input id="duration" type="number" min="1" max="60" value="10"/></div>
       </div>
-      <div class="row3">
+      <div class="row3" style="margin-top:12px">
         <div><div class="label">Trial size (bits)</div><input id="trialBits" type="number" min="50" max="2000" value="200"/></div>
         <div><div class="label">Alpha</div>
           <select id="alpha"><option value="0.05" selected>0.05 (95%)</option><option value="0.01">0.01 (99%)</option></select>
         </div>
         <div class="controls" style="align-items:flex-end">
-          <button id="startBtn">Start</button>
-          <button id="stopBtn" disabled>End</button>
+          <button id="startBtn" class="btn">Start</button>
+          <button id="stopBtn" class="btn" disabled>End</button>
+          <button id="markBtn" class="btn ghost" disabled>Mark moment</button>
         </div>
       </div>
-      <div class="controls" aria-live="polite">
-        <span class="pill" id="elapsed">Elapsed: 00:00</span>
-      </div>
+
+      <!-- Elapsed row -->
       <div style="margin-top:10px">
+        <span class="pill" id="elapsed">Elapsed: 00:00</span>
+        <label style="margin-left:10px;font-size:12px;color:#93a0c7;display:inline-flex;gap:6px;align-items:center">
+          <input type="checkbox" id="autoMark" checked style="accent-color:#0ea5e9; width:16px; height:16px"/> Auto‑mark when effect ≥ Possible
+        </label>
+      </div>
+
+      <div style="margin-top:12px">
         <span id="liveEffect" class="effect normal">No unusual pattern detected — randomness looks normal.</span>
       </div>
     </div>
@@ -140,10 +152,9 @@
   <div class="card">
     <div class="label">Past sessions (shared)</div>
     <div style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap">
-      <button id="exportCsv">Export CSV</button>
-      <button id="exportPdf">Export PDF</button>
-      <button id="deleteAll" class="danger">Delete All Data</button>
-      <span class="pill">Combined Stouffer Z (last 30): <b id="comboZ">—</b></span>
+      <button id="exportCsv" class="btn">Export CSV</button>
+      <button id="exportPdf" class="btn">Export PDF</button>
+      <button id="deleteAll" class="btn red">Delete All Data</button>
     </div>
     <div class="tablewrap">
       <table id="resultsTable">
@@ -163,7 +174,7 @@
   <div class="modal">
     <header>
       <h2 id="helpTitle">Help & How it Works</h2>
-      <button id="closeHelp" class="ghost">Close</button>
+      <button id="closeHelp" class="btn ghost">Close</button>
     </header>
     <div class="content">
       <p><b>Quantum Consciousness Coherence App</b> explores whether shared intention affects a quantum random number generator (QRNG). You set a duration and focus together; the app measures drift from randomness.</p>
@@ -193,7 +204,7 @@
 </div>
 
 <script>
-// Remove service worker/caches
+// Remove service worker/caches (just in case)
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
   if (window.caches && caches.keys) { caches.keys().then(keys => keys.forEach(k => caches.delete(k))); }
@@ -216,9 +227,21 @@ const SUPABASE_URL = "https://wyecvewtlgyzizupocfh.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZWN2ZXd0bGd5eml6dXBvY2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTYzODcsImV4cCI6MjA3MDY5MjM4N30.nfcrwzm1t-d5l3DiME5RFahC_LVxStn0IekaPjMKMpg";
 const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// Helpers
-function getProject(){ return (window.__GCLAB__ && window.__GCLAB__.project) || 'clares-data'; }
-function setError(msg){ const e=document.getElementById('errPanel'); e.textContent=msg; e.classList.remove('hidden'); }
+function getProject(){
+  try{
+    const params=new URLSearchParams(location.search);
+    const urlProj=(params.get('project')||'').trim();
+    const project=urlProj || (localStorage.getItem('project_code')||'').trim() || 'clares-data';
+    localStorage.setItem('project_code',project);
+    return project;
+  }catch(e){ return 'clares-data'; }
+}
+
+// Status helper -> compact error panel only
+function setError(err){
+  if(!err) return;
+  const e=document.getElementById('errPanel'); e.textContent=err; e.classList.remove('hidden');
+}
 
 // Stats helpers
 function erf(x){const s=x>=0?1:-1; x=Math.abs(x); const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911; const t=1/(1+p*x); const y=1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x); return s*y;}
@@ -236,8 +259,8 @@ function effectLabel(p, alpha){
   return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
 }
 function badgeHtml(tier){
-  const cls = (tier||'Normal').toLowerCase();
-  return `<span class="badge ${cls}">${tier}</span>`;
+  const cls=(tier||'Normal').toLowerCase();
+  return '<span class="badge '+cls+'">'+tier+'</span>';
 }
 function setLiveEffect(p, alpha){
   const info = effectLabel(p,alpha);
@@ -288,25 +311,19 @@ async function dbInsert(project, rec){
     const { error } = await SB.from('sessions').insert(rec);
     if (error) throw error;
   } catch (e) {
-    // Fallback if effect_label column doesn't exist yet: try without it
-    if (String(e.message||'').toLowerCase().includes('column') && String(e.message||'').toLowerCase().includes('effect_label')) {
-      const rec2 = Object.assign({}, rec);
-      delete rec2.effect_label;
-      try { await SB.from('sessions').insert(rec2); }
-      catch (e2) { setError(e2.message || String(e2)); }
-    } else {
-      const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]'); s.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(s));
-      setError(e.message || String(e));
-    }
+    // fallback to local cache
+    const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]'); s.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(s));
+    setError(e.message || String(e));
   }
 }
 async function dbDeleteAll(project){
+  const ok = confirm(`Are you sure you want to delete ALL data for project "${project}"? This cannot be undone.`);
+  if(!ok) return;
   try {
     const { error } = await SB.from('sessions').delete().eq('project', project);
-    if (error) throw error;
-  } catch (e) {
+    if(error) throw error;
+  } catch(e){
     setError(e.message || String(e));
-    throw e;
   }
 }
 
@@ -315,49 +332,45 @@ function renderTable(rows){
   const body=document.getElementById('resultsBody');
   body.innerHTML = rows.map((r,i)=>{
     const tier = r.effect_label || '';
-    return `<tr>
-      <td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td>
-      <td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td>
-      <td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td>
-      <td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td>
-      <td>${tier ? (''+badgeHtml(tier)) : ''}</td>
-    </tr>`;
+    return '<tr>'
+      + '<td>'+ (i+1) +'</td>'
+      + '<td>'+ (r.tester||'') +'</td>'
+      + '<td>'+ (r.title||'') +'</td>'
+      + '<td>'+ (new Date(r.start).toLocaleString()) +'</td>'
+      + '<td>'+ (r.duration_min) +'</td>'
+      + '<td>'+ (r.trials) +'</td>'
+      + '<td>'+ (r.trial_bits) +'</td>'
+      + '<td>'+ (r.alpha) +'</td>'
+      + '<td>'+ ((+r.z).toFixed ? (+r.z).toFixed(3) : r.z) +'</td>'
+      + '<td>'+ ((+r.p).toExponential ? (+r.p).toExponential(2) : r.p) +'</td>'
+      + '<td>'+ (tier ? badgeHtml(tier) : '') +'</td>'
+      + '</tr>';
   }).join('');
-  const zs=rows.slice(0,30).map(r=>+r.z); document.getElementById('comboZ').textContent = (zs.length? (stoufferZ(zs).toFixed(3)) : '—');
+  const zs=rows.slice(0,30).map(r=>+r.z); document.getElementById('comboZ') && (document.getElementById('comboZ').textContent = (zs.length? (stoufferZ(zs).toFixed(3)) : '—'));
 }
 
 // Exports
 document.getElementById('exportCsv').addEventListener('click', async ()=>{
   const project=getProject(); const s=await dbFetch(project);
   const header=['project','tester','title','start','duration_min','trials','trial_bits','alpha','z','p','effect_label'];
-  const lines=[header.join(',')].concat(s.map(r=> header.map(k=> r[k]).join(',')));
+  const lines=[header.join(',')].concat(s.map(r=> header.map(k=> r[k] instanceof Date ? r[k].toISOString() : r[k]).join(',')));
   const blob=new Blob([lines.join('\n')],{type:'text/csv'}); const url=URL.createObjectURL(blob);
   const a=document.createElement('a'); a.href=url; a.download=`gclab_sessions_${project}.csv`; a.click(); URL.revokeObjectURL(url);
 });
 document.getElementById('exportPdf').addEventListener('click', async ()=>{
   const project=getProject(); const s=await dbFetch(project);
   const { jsPDF } = window.jspdf; const doc=new jsPDF({unit:'pt',format:'a4'});
-  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text('Quantum Consciousness Coherence — All Sessions', 40, 40);
+  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text('Group Coherence — All Sessions', 40, 40);
   doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text('Project: ' + project, 40, 58);
   const head=[['#','Tester','Title','Start','Min','Tests','Bits','Alpha','Z','p','Effect']];
   const body = s.map((r,i)=>[i+1, r.tester||'', r.title||'', new Date(r.start).toLocaleString(), r.duration_min, r.trials, r.trial_bits, r.alpha, (+r.z).toFixed(3), (+r.p).toExponential(2), r.effect_label||'']);
   doc.autoTable({ head, body, startY: 72, styles:{fontSize:9, cellPadding:3}, headStyles:{fillColor:[14,165,233]} });
-  doc.save(`quantum_coherence_sessions_${project}.pdf`);
+  doc.save(`group_coherence_sessions_${project}.pdf`);
 });
-
-// Delete All
 document.getElementById('deleteAll').addEventListener('click', async ()=>{
   const project=getProject();
-  const ok = confirm(`Are you sure you want to delete ALL data for project "${project}"? This cannot be undone.`);
-  if(!ok) return;
-  try{
-    await dbDeleteAll(project);
-    const rows = await dbFetch(project);
-    renderTable(rows);
-    alert('All data deleted for project: ' + project);
-  }catch(e){
-    // error already shown
-  }
+  await dbDeleteAll(project);
+  const rows=await dbFetch(project); renderTable(rows);
 });
 
 // RNG via Netlify Function
@@ -370,13 +383,14 @@ async function qrng(len){
 }
 
 // Session
-let session=null, elapsedTimer=null;
+let session=null, elapsedTimer=null, lastAutoMark=0;
 const nameEl=document.getElementById('testerName'), titleEl=document.getElementById('sessionTitle'), durEl=document.getElementById('duration'), trialBitsEl=document.getElementById('trialBits'), alphaEl=document.getElementById('alpha');
-const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), elapsedEl=document.getElementById('elapsed');
+const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), markBtn=document.getElementById('markBtn'), elapsedEl=document.getElementById('elapsed');
+const autoMarkEl=document.getElementById('autoMark');
 
 function lockUI(run){
   [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn].forEach(el=> el.disabled=run);
-  stopBtn.disabled=!run;
+  stopBtn.disabled=!run; markBtn.disabled=!run;
 }
 function startElapsed(){
   const t0=Date.now();
@@ -388,12 +402,18 @@ function startElapsed(){
 }
 function stopElapsed(){ if(elapsedTimer){ clearInterval(elapsedTimer); elapsedTimer=null; }}
 
+async function markMoment(project, plan, cumZ, p, tier, trialsCount){
+  const nowIso = new Date().toISOString();
+  const rec={ project, tester:plan.tester, title:(plan.title? plan.title+' • Moment' : 'Moment'), start:nowIso, duration_min:0, trials:trialsCount, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:p, effect_label:tier };
+  await dbInsert(project, rec);
+}
+
 async function runSession(){
   const project = getProject();
-  const plan={ tester:nameEl.value.trim()||'—', title:titleEl.value.trim(), duration_min:Math.max(1,parseInt(durEl.value||'10',10)), trial_bits:Math.max(50,parseInt(trialBitsEl.value||'200',10)), alpha:alphaEl.value, start:new Date().toISOString() };
-  session={plan,zs:[],stop:false}; lockUI(true); clearPlot(); drawAxes(); startElapsed();
-  const endTime=Date.now()+plan.duration_min*60*1000;
+  const plan={ tester:(nameEl.value||'').trim()||'—', title:(titleEl.value||'').trim(), duration_min:Math.max(1,parseInt(durEl.value||'10',10)), trial_bits:Math.max(50,parseInt(trialBitsEl.value||'200',10)), alpha:alphaEl.value, start:new Date().toISOString() };
+  session={plan,zs:[],stop:false}; lockUI(true); clearPlot(); drawAxes(); startElapsed(); lastAutoMark=0;
   try{
+    const endTime=Date.now()+plan.duration_min*60*1000;
     while(!session.stop && Date.now()<endTime){
       const words=Math.ceil(plan.trial_bits/16);
       const u16=await qrng(Math.min(1024,words));
@@ -406,8 +426,17 @@ async function runSession(){
       const p = twoSidedP(cumZ);
       document.getElementById('cumZ').textContent=cumZ.toFixed(3);
       document.getElementById('pval').textContent=p.toExponential(2);
-      setLiveEffect(p, plan.alpha);
+      const tier = setLiveEffect(p, plan.alpha);
       plotSeries(session.zs, plan.alpha);
+
+      // Auto-mark if enabled and effect >= Possible; cooldown 15s
+      if (autoMarkEl.checked && (tier==='Possible' || tier==='Strong' || tier==='Extraordinary')){
+        const now=Date.now();
+        if (now - lastAutoMark > 15000){ // 15s cooldown
+          lastAutoMark = now;
+          await markMoment(project, plan, cumZ, p, tier, session.zs.length);
+        }
+      }
       await new Promise(r=> setTimeout(r,1000));
     }
     const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(Math.max(1,session.zs.length));
@@ -423,17 +452,24 @@ async function runSession(){
   }
 }
 
-// Boot
-async function boot(){
-  clearPlot(); drawAxes();
-  const rows = await dbFetch(getProject());
-  renderTable(rows);
-}
-boot();
+// Manual mark
+document.getElementById('markBtn').addEventListener('click', async ()=>{
+  if (!session) return;
+  const project=getProject(); const plan=session.plan;
+  const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(Math.max(1,session.zs.length));
+  const p = twoSidedP(cumZ);
+  const tier = effectLabel(p, plan.alpha).tier;
+  await markMoment(project, plan, cumZ, p, tier, session.zs.length);
+  const rows=await dbFetch(project); renderTable(rows);
+});
 
 // Buttons
 document.getElementById('startBtn').addEventListener('click', ()=>{ if(session) return; runSession(); });
 document.getElementById('stopBtn').addEventListener('click', ()=>{ if(session) session.stop=true; });
+
+async function refreshTable(){ const rows=await dbFetch(getProject()); renderTable(rows); }
+function boot(){ clearPlot(); drawAxes(); refreshTable(); }
+boot();
 </script>
 </body>
 </html>
