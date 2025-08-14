@@ -5,36 +5,36 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Quantum Consciousness Coherence App</title>
-  <meta name="theme-color" content="#0ea5e9"/>
+  <meta name="theme-color" content="#88eeff"/>
   <style>
-    :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#0ea5e9;
-            --ok:#34d399; --warn:#f59e0b; --extra:#a78bfa; --normal:#64748b; }
+    :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#38bdf8;
+            --amber:#f59e0b; --teal:#10b981; --violet:#8b5cf6; --slate:#64748b; }
     html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    header{padding:18px 16px 10px;text-align:center}
-    h1{margin:0;font-size:22px;letter-spacing:.4px}
-    .subtitle{color:#93a0c7;font-size:13px;margin-top:6px}
-    .wrap{max-width:980px;margin:0 auto;padding:12px 16px 36px}
-    .card{background:var(--panel);border:1px solid #262a43;border-radius:14px;padding:16px;margin-bottom:14px}
+    header{padding:16px 16px 8px;text-align:center}
+    h1{margin:0;font-size:22px;letter-spacing:.3px}
+    .subtitle{color:#93a0c7;font-size:13px;margin-top:4px;text-wrap:balance}
+    .wrap{max-width:980px;margin:0 auto;padding:12px 16px 40px}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:1000px){.grid{grid-template-columns:1.2fr 1fr}}
+    .card{background:var(--panel);border:1px solid #262a43;border-radius:14px;padding:16px}
     .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
     input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:10px 12px;width:100%}
+    .row3{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:12px}
+    @media(max-width:680px){ .row3{grid-template-columns:1fr} }
     button{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
     button.ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158}
-    button.danger{background:linear-gradient(180deg,#ef4444,#dc2626);color:#fff}
-    button:disabled{opacity:.6;cursor:not-allowed}
-    .row3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:14px}
-    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media(max-width:820px){ .row3{grid-template-columns:1fr} .row2{grid-template-columns:1fr} }
-    .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-    .topbar{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-bottom:8px}
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid #2b3158;border-radius:999px;color:#e8ecff;font-size:12px;background:#1a2044}
-    .pill.spinner::after{ content:""; width:12px; height:12px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; display:inline-block; animation:spin 1s linear infinite; }
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .effect{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;font-weight:700;margin-top:8px}
+    button.red{background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-start}
+    .helpwrap{display:flex;justify-content:flex-end;margin-top:6px;margin-bottom:4px}
+    .helpwrap button{background:linear-gradient(180deg,#38bdf8,#0ea5e9); padding:10px 14px; border-radius:12px}
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border:1px solid #2b3158;border-radius:999px;color:#e8ecff;font-size:12px;background:#1a2044}
+    .pill i{display:inline-block;width:12px;height:12px;border-radius:999px;background:#9ae6ff}
+    .effect{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;font-weight:700;margin-top:10px}
     .effect.normal{background:#0f172a;color:#cbd5e1;border:1px solid #334155}
     .effect.possible{background:#1f2937;color:#fde68a;border:1px solid #6b7280}
     .effect.strong{background:#042f2e;color:#a7f3d0;border:1px solid #065f46}
     .effect.extra{background:#1e1b4b;color:#ddd6fe;border:1px solid #4c1d95}
-    canvas{width:100%;height:260px;background:#0b0d1a;border:1px solid #22264a;border-radius:10px;display:block}
+    canvas{width:100%;height:280px;background:#0b0d1a;border:1px solid #22264a;border-radius:10px;display:block}
     .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
     .stat{background:#0e1020;border:1px solid #22264a;border-radius:10px;padding:10px}
     .stat b{display:block;font-size:20px;margin-top:6px;color:#bfe6ff}
@@ -45,19 +45,22 @@
     .badge.possible{background:#1f2937;color:#fde68a;border:1px solid #6b7280}
     .badge.strong{background:#064e3b;color:#a7f3d0;border:1px solid #065f46}
     .badge.extra{background:#312e81;color:#ddd6fe;border:1px solid #4c1d95}
-    .error{color:#ffbaba;background:#3b0f0f;border:1px solid #6b1d1d;padding:8px;border-radius:10px;margin:10px 0;display:none}
-    .spacer{height:8px}
-    .topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-    .helpbtn{margin-left:auto}
+    .error{color:#ffbaba;background:#3b0f0f;border:1px solid #6b1d1d;padding:8px;border-radius:10px;margin-top:10px}
+    /* Help modal */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,20,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+    .modal{background:#0f1328;border:1px solid #2b3158;border-radius:16px;max-width:860px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+    .modal header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #24304f}
+    .modal h2{margin:0;font-size:18px}
+    .modal .content{padding:16px}
+    .legend{display:grid;grid-template-columns:1fr;gap:8px;margin:8px 0 16px}
+    .legend .row{display:flex;align-items:center;gap:10px}
+    .legend .swatch{width:16px;height:16px;border-radius:4px;border:1px solid #2b3158}
+    .swatch.grey{background:#111827}
+    .swatch.yellow{background:#1f2937}
+    .swatch.green{background:#064e3b}
+    .swatch.purple{background:#312e81}
+    .muted{color:#93a0c7}
   </style>
-  <script>
-    (function(){
-      const params=new URLSearchParams(location.search);
-      const project=(params.get('project')||localStorage.getItem('project_code')||'clares-data').trim();
-      localStorage.setItem('project_code', project);
-      window.__APP__={project, version:'v10.6.2'};
-    })();
-  </script>
 </head>
 <body>
 <header>
@@ -66,53 +69,48 @@
 </header>
 
 <div class="wrap">
-  <div class="topline">
-    <div class="controls">
-      <button id="helpBtn" class="helpbtn">What even is this?</button>
-    </div>
-    <div class="controls">
-      <span id="offlinePill" class="pill" style="display:none">Offline mode — logging locally</span>
-      <span id="syncPill" class="pill spinner" style="display:none">Syncing…</span>
-    </div>
+  <div class="helpwrap">
+    <button id="helpBtn">What even is this?</button>
   </div>
 
-  <div id="errPanel" class="error"></div>
+  <div id="errPanel" class="error" style="display:none"></div>
 
-  <div class="card">
-    <div class="label">Session setup</div>
-    <div class="row3" style="margin-top:10px">
-      <div><div class="label">Tester name</div><input id="testerName" placeholder="e.g., Clare" /></div>
-      <div><div class="label">Session title</div><input id="sessionTitle" placeholder="e.g., Sunday Circle" /></div>
-      <div><div class="label">Duration (minutes)</div><input id="duration" type="number" min="1" max="180" value="10" /></div>
-    </div>
-    <div class="row3" style="margin-top:10px">
-      <div><div class="label">Trial size (bits)</div><input id="trialBits" type="number" min="50" max="2000" value="200" /></div>
-      <div><div class="label">Alpha</div>
-        <select id="alpha"><option value="0.05" selected>0.05 (95%)</option><option value="0.01">0.01 (99%)</option></select>
+  <div class="grid">
+    <div class="card">
+      <div class="label">Session setup</div>
+      <div class="row3" style="margin-top:10px">
+        <div><div class="label">Tester name</div><input id="testerName" placeholder="e.g., Clare" maxlength="60"></div>
+        <div><div class="label">Session title</div><input id="sessionTitle" placeholder="e.g., Sunday Circle" maxlength="80"></div>
+        <div><div class="label">Duration (minutes)</div><input id="duration" type="number" min="1" max="60" value="10"></div>
       </div>
-      <div class="controls" style="align-items:flex-end">
-        <button id="startBtn">Start</button>
-        <button id="stopBtn" disabled>End</button>
-        <button id="markBtn" disabled class="ghost">Mark moment</button>
+      <div class="row3" style="margin-top:10px">
+        <div><div class="label">Trial size (bits)</div><input id="trialBits" type="number" min="50" max="2000" value="200"></div>
+        <div><div class="label">Alpha</div>
+          <select id="alpha"><option value="0.05" selected>0.05 (95%)</option><option value="0.01">0.01 (99%)</option></select>
+        </div>
+        <div class="btnrow" style="align-items:flex-end">
+          <button id="startBtn">Start</button>
+          <button id="stopBtn" disabled>End</button>
+          <button id="markBtn" class="ghost" disabled>Mark moment</button>
+        </div>
+      </div>
+      <div class="btnrow" style="margin-top:8px">
+        <span class="pill" id="elapsed">Elapsed: 00:00</span>
+        <span class="pill" id="offlinePill" style="display:none"><i></i> Offline mode — logging locally</span>
+        <span class="pill" id="syncPill" style="display:none"><i></i> Syncing…</span>
+      </div>
+      <div style="margin-top:8px">
+        <span id="liveEffect" class="effect normal">No unusual pattern detected — randomness looks normal.</span>
       </div>
     </div>
-    <div class="spacer"></div>
-    <div class="controls">
-      <span class="pill" id="elapsed">Elapsed: 00:00</span>
-    </div>
-    <div class="spacer"></div>
-    <div>
-      <span id="liveEffect" class="effect normal">No unusual pattern detected — randomness looks normal.</span>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="label">Live deviation</div>
-    <canvas id="plot" width="800" height="260"></canvas>
-    <div class="stats">
-      <div class="stat"><span class="small muted">Overall Drift</span><b id="cumZ">—</b></div>
-      <div class="stat"><span class="small muted">How Unusual?</span><b id="pval">—</b></div>
-      <div class="stat"><span class="small muted">Number of Tests</span><b id="trials">0</b></div>
+    <div class="card">
+      <div class="label">Live deviation</div>
+      <canvas id="plot" width="800" height="280"></canvas>
+      <div class="stats">
+        <div class="stat"><span class="small muted">Overall Drift</span><b id="cumZ">—</b></div>
+        <div class="stat"><span class="small muted">How Unusual?</span><b id="pval">—</b></div>
+        <div class="stat"><span class="small muted">Number of Tests</span><b id="trials">0</b></div>
+      </div>
     </div>
   </div>
 
@@ -121,11 +119,11 @@
   </div>
 
   <div class="card">
-    <div class="label">Past sessions</div>
+    <div class="label">Past sessions (shared)</div>
     <div style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap">
       <button id="exportCsv">Export CSV</button>
       <button id="exportPdf">Export PDF</button>
-      <button id="deleteAll" class="danger">Delete All Data</button>
+      <button id="deleteAll" class="red">Delete All Data</button>
     </div>
     <div class="tablewrap">
       <table id="resultsTable">
@@ -141,30 +139,31 @@
 </div>
 
 <!-- Help Modal -->
-<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle" style="display:none;align-items:center;justify-content:center;padding:16px;position:fixed;inset:0;background:rgba(0,0,20,.6);backdrop-filter:blur(3px);z-index:50">
-  <div class="modal" style="background:#0f1328;border:1px solid #2b3158;border-radius:16px;max-width:860px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)">
-    <header style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #24304f">
-      <h2 id="helpTitle" style="margin:0;font-size:18px">What is this?</h2>
+<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="modal">
+    <header>
+      <h2 id="helpTitle">Help & How it Works</h2>
       <button id="closeHelp" class="ghost">Close</button>
     </header>
-    <div class="content" style="padding:16px">
-      <p><b>Quantum Consciousness Coherence App</b> explores whether shared intention affects a quantum random number generator (QRNG). You set a duration and focus together; the app measures drift from randomness.</p>
+    <div class="content">
+      <p><b>Group Coherence Lab</b> explores whether shared intention affects a quantum random number generator (QRNG). You set a duration and focus together; the app measures drift from randomness.</p>
       <p class="muted">Two knobs you can adjust:</p>
       <ul>
-        <li><b>Alpha</b>: how strict the test is. 0.05 is standard; 0.01 is stricter.</li>
-        <li><b>Trial size</b>: how many bits per test. Smaller = faster/less stable. Larger = steadier/slower.</li>
+        <li><b>Alpha</b>: how strict the test is. 0.05 is standard (easier to see effects); 0.01 is stricter (fewer “false alarms”).</li>
+        <li><b>Trial size</b>: how many bits per test. Small = faster, but noisier. Large = slower, but steadier.</li>
       </ul>
       <hr style="border-color:#24304f;border-style:solid;border-width:1px 0 0;margin:12px 0"/>
       <p><b>Color legend (based on cumulative z‑score)</b></p>
       <div class="legend">
-        <div class="row"><span class="badge normal">Grey</span> — No unusual pattern (|z| &lt; 1.96)</div>
-        <div class="row"><span class="badge possible">Yellow</span> — Possible influence (1.96 ≤ |z| &lt; 2.58)</div>
-        <div class="row"><span class="badge strong">Green</span> — Strong effect (2.58 ≤ |z| &lt; 3.29)</div>
-        <div class="row"><span class="badge extra">Purple</span> — Extraordinary (|z| ≥ 3.29)</div>
+        <div class="row"><span class="swatch grey"></span> <b>Grey — No unusual pattern</b> <span class="muted">| |z| &lt; 1.96</span></div>
+        <div class="row"><span class="swatch yellow"></span> <b>Yellow — Possible group influence</b> <span class="muted">| 1.96 ≤ |z| &lt; 2.58</span></div>
+        <div class="row"><span class="swatch green"></span> <b>Green — Strong effect</b> <span class="muted">| 2.58 ≤ |z| &lt; 3.29</span></div>
+        <div class="row"><span class="swatch purple"></span> <b>Purple — Extraordinary coherence</b> <span class="muted">| |z| ≥ 3.29</span></div>
       </div>
+      <p class="muted">Tip: Larger groups or deeper coherence often show smoother, stronger drift.</p>
       <hr style="border-color:#24304f;border-style:solid;border-width:1px 0 0;margin:12px 0"/>
       <p><b>Watch: Quick intro</b></p>
-      <div class="ytwrap" style="position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;border:1px solid #24304f;background:#000">
+      <div style="position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;border:1px solid #24304f;background:#000">
         <iframe src="https://www.youtube.com/embed/Sp7-6850Mls" title="YouTube video player" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowfullscreen style="position:absolute;inset:0;width:100%;height:100%"></iframe>
@@ -177,68 +176,72 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <script>
-// Constants
+// Config
 const SUPABASE_URL = "https://wyecvewtlgyzizupocfh.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZWN2ZXd0bGd5eml6dXBvY2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTYzODcsImV4cCI6MjA3MDY5MjM4N30.nfcrwzm1t-d5l3DiME5RFahC_LVxStn0IekaPjMKMpg";
 const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-const PROJECT = (window.__APP__ && window.__APP__.project) || 'clares-data';
+const params = new URLSearchParams(location.search);
+const PROJECT = (params.get('project')||localStorage.getItem('project_code')||'clares-data').trim();
+localStorage.setItem('project_code', PROJECT);
 
-// UI refs
-const errPanel = document.getElementById('errPanel');
-const offlinePill = document.getElementById('offlinePill');
-const syncPill = document.getElementById('syncPill');
+// Help modal
 const helpBtn = document.getElementById('helpBtn');
 const helpOverlay = document.getElementById('helpOverlay');
 const closeHelp = document.getElementById('closeHelp');
-
-// Help modal
 helpBtn.addEventListener('click', ()=> helpOverlay.style.display='flex');
 closeHelp.addEventListener('click', ()=> helpOverlay.style.display='none');
 helpOverlay.addEventListener('click', (e)=>{ if(e.target===helpOverlay) helpOverlay.style.display='none'; });
 
-function showError(msg){
-  if(!msg){ errPanel.style.display='none'; errPanel.textContent=''; return; }
-  errPanel.textContent = msg;
-  errPanel.style.display='block';
-}
+// UI elems
+const errPanel = document.getElementById('errPanel');
+const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), markBtn=document.getElementById('markBtn');
+const elapsedEl=document.getElementById('elapsed');
+const offlineP=document.getElementById('offlinePill'), syncP=document.getElementById('syncPill');
+const nameEl=document.getElementById('testerName'), titleEl=document.getElementById('sessionTitle'), durEl=document.getElementById('duration'), trialBitsEl=document.getElementById('trialBits'), alphaEl=document.getElementById('alpha');
+const liveEl=document.getElementById('liveEffect');
+
+function showErr(msg){ errPanel.style.display='block'; errPanel.textContent = msg; }
+function clearErr(){ errPanel.style.display='none'; errPanel.textContent=''; }
 
 // Offline/online pills
-function updateNetPills(){
-  offlinePill.style.display = navigator.onLine ? 'none' : 'inline-flex';
+function updateOfflinePill(){
+  if (navigator.onLine){ offlineP.style.display='none'; }
+  else { offlineP.style.display='inline-flex'; }
 }
-window.addEventListener('online', updateNetPills);
-window.addEventListener('offline', updateNetPills);
-updateNetPills();
+window.addEventListener('online', ()=>{ updateOfflinePill(); });
+window.addEventListener('offline', ()=>{ updateOfflinePill(); });
+updateOfflinePill();
 
-// Outbox queue
-function getOutbox(){ try{return JSON.parse(localStorage.getItem('outbox')||'[]')}catch(e){return[]} }
-function setOutbox(arr){ localStorage.setItem('outbox', JSON.stringify(arr||[])); }
-async function flushOutbox(){
-  const box=getOutbox(); if(!box.length) return;
-  syncPill.style.display='inline-flex';
-  for(let i=0;i<box.length;i++){
-    try{
-      const rec = box[i];
-      const { error } = await SB.from('sessions').insert(rec);
-      if(!error){ box.splice(i,1); i--; setOutbox(box); }
-      else { throw error; }
-    }catch(e){
-      // Stay in outbox, stop flush for now
-      break;
-    }
+// Sync pill helpers
+let syncing=false;
+function setSyncing(on){ syncing=!!on; syncP.style.display = on ? 'inline-flex' : 'none'; }
+
+// RNG: QRNG with fallback to local crypto, and auto-clear offline banner on success
+async function qrng(len){
+  try{
+    const r = await fetch(`/.netlify/functions/qrng?len=${len}`, { mode:'cors' });
+    if(!r.ok) throw new Error('qrng failed');
+    const j = await r.json();
+    const arr = j.data || [];
+    // If we got data via network, ensure offline pill is hidden (net is back)
+    if (arr && arr.length) offlineP.style.display='none';
+    return new Uint16Array(arr.map(x=>x&0xFFFF));
+  }catch(e){
+    // fallback to local secure RNG
+    const u16 = new Uint16Array(len);
+    crypto.getRandomValues(u16);
+    return u16;
   }
-  if(!getOutbox().length) syncPill.style.display='none';
 }
-window.addEventListener('online', flushOutbox);
 
-// Stats helpers
+// Stats
 function erf(x){const s=x>=0?1:-1; x=Math.abs(x); const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911; const t=1/(1+p*x); const y=1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x); return s*y;}
 function cdfNormal(z){return .5*(1+erf(z/Math.SQRT2));}
 function twoSidedP(z){return 2*(1-cdfNormal(Math.abs(z)));}
 function stoufferZ(zs){if(!zs.length) return 0; const s=zs.reduce((a,b)=>a+b,0); return s/Math.sqrt(zs.length);}
 
-// Effect labelling
-function effectInfoFromP(p, alpha){
+// Effect labels
+function effectLabel(p, alpha){
   const a = parseFloat(alpha||'0.05');
   if (!isFinite(p)) return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
   if (p <= 0.2*a || p <= 0.001) return {cls:'extra', text:'Extraordinary effect — high coherence observed!', tier:'Extraordinary'};
@@ -246,100 +249,153 @@ function effectInfoFromP(p, alpha){
   if (p <= a) return {cls:'possible', text:'Small shift detected — possible group influence.', tier:'Possible'};
   return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
 }
-function badgeHtml(tier){
-  const cls = (tier||'Normal').toLowerCase();
-  return '<span class="badge '+cls+'">'+tier+'</span>';
+function setLiveEffect(p, alpha){
+  const info = effectLabel(p,alpha);
+  liveEl.className='effect '+info.cls;
+  liveEl.textContent=info.text;
+  return info.tier;
+}
+function setFinalEffect(p, alpha){
+  const info=effectLabel(p,alpha);
+  const el=document.getElementById('finalEffect');
+  el.className='effect '+info.cls;
+  el.textContent='Session complete — '+info.text.replace(/^No unusual pattern detected — /,'').replace(/ — .*$/,'').trim() || info.text;
+  document.getElementById('finalCard').style.display='block';
+  return info.tier;
 }
 
 // Plot
 const canvas=document.getElementById('plot'); const ctx=canvas.getContext('2d');
 function clearPlot(){ctx.fillStyle='#0b0d1a';ctx.fillRect(0,0,canvas.width,canvas.height);}
 function drawAxes(){ctx.strokeStyle='#22264a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(40,10);ctx.lineTo(40,canvas.height-20);ctx.lineTo(canvas.width-10,canvas.height-20);ctx.stroke();ctx.fillStyle='#93a0c7';ctx.font='12px system-ui';ctx.fillText('Z',10,16);ctx.fillText('Trials →',canvas.width-100,canvas.height-6);}
+function yMapFactory(alpha, zs){
+  const zStar = (alpha==='0.01')?2.576:1.96;
+  // Compute cums for dynamic range
+  let cums=[], s=0; for(let i=0;i<zs.length;i++){ s+=zs[i]; cums.push(s/Math.sqrt(i+1)); }
+  const ymax = Math.max(zStar*1.3, Math.max(0, ...cums.map(v=>Math.abs(v))) + 0.5);
+  const w=canvas.width-50, h=canvas.height-40, x0=40, y0=canvas.height-20;
+  const up=0.65, down=0.35; // more visual space below zero
+  const zeroY = y0 - h*up;
+  function x(i,n){ return x0 + (w*(i/Math.max(1,(n-1)))) }
+  function y(v){
+    if (v>=0) return zeroY - (v/ymax)*(h*up);
+    return zeroY - (v/ymax)*(h*down);
+  }
+  return {x,y,ymax,zStar,x0,y0,w,h,zeroY,up,down};
+}
+function drawBands(map){
+  const {y, x0, w, h} = map;
+  // Thresholds
+  const t = [1.96, 2.58, 3.29];
+  // Colors with opacity
+  function fillBand(yTop, yBot, color, label){
+    ctx.save();
+    ctx.globalAlpha = 0.12;
+    ctx.fillStyle = color;
+    ctx.fillRect(x0+1, yTop, w-2, Math.max(0,yBot - yTop));
+    ctx.restore();
+    // Label
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.9;
+    ctx.font = '12px system-ui';
+    const ty = yTop + 16;
+    ctx.fillText(label, x0 + w - 160, ty);
+    ctx.globalAlpha = 1.0;
+  }
+  // Positive side (top bands)
+  fillBand(y(3.29), y(2.58), '#8b5cf6', 'Extraordinary (|z| ≥ 3.29)');
+  fillBand(y(2.58), y(1.96), '#10b981', 'Strong (2.58 ≤ |z| < 3.29)');
+  fillBand(y(1.96), y(0),    '#f59e0b', 'Possible (1.96 ≤ |z| < 2.58)');
+  // Negative side (bottom bands)
+  fillBand(y(0),     y(-1.96), '#f59e0b', 'Possible');
+  fillBand(y(-1.96), y(-2.58), '#10b981', 'Strong');
+  fillBand(y(-2.58), y(-3.29), '#8b5cf6', 'Extraordinary');
+}
 function plotSeries(zs,alpha){
   clearPlot(); drawAxes();
-  const w=canvas.width-50,h=canvas.height-40,x0=40,y0=canvas.height-20;
+  const map = yMapFactory(alpha, zs);
+  drawBands(map);
   const n=Math.max(1,zs.length); let cums=[],s=0; for(let i=0;i<n;i++){s+=zs[i]; cums.push(s/Math.sqrt(i+1));}
-  const zStar=(alpha==='0.01')?2.576:1.96;
-  const ymax=Math.max(zStar*1.3, Math.max(...cums.map(v=>Math.abs(v)))+0.5);
-  function x(i){return x0+(w*(i/(n-1||1)));} function y(v){return y0-(v/ymax)*(h/2);}
-  ctx.strokeStyle='#2b3158';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y(zStar));ctx.lineTo(x0+w,y(zStar));ctx.stroke();ctx.beginPath();ctx.moveTo(x0,y(-zStar));ctx.lineTo(x0+w,y(-zStar));ctx.stroke();
-  ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#0ea5e9'; ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(x(0),y(cums[0]||0)); for(let i=1;i<n;i++){ctx.lineTo(x(i),y(cums[i]));} ctx.stroke();
+  // Reference lines at ±z*
+  ctx.strokeStyle='#2b3158';ctx.lineWidth=1.2;
+  ctx.beginPath(); ctx.moveTo(map.x0, map.y(map.zStar)); ctx.lineTo(map.x0+map.w, map.y(map.zStar)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(map.x0, map.y(-map.zStar)); ctx.lineTo(map.x0+map.w, map.y(-map.zStar)); ctx.stroke();
+  // Series
+  ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#38bdf8'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(map.x(0,n), map.y(cums[0]||0));
+  for(let i=1;i<n;i++){ ctx.lineTo(map.x(i,n), map.y(cums[i])); }
+  ctx.stroke();
 }
 
-// DB
+// DB helpers
+function setStatusErr(e){ if(e){ showErr(e.message || String(e)); } }
 async function dbFetch(project){
   try {
     const { data, error } = await SB.from('sessions').select('*').eq('project', project).order('start', { ascending:false }).limit(500);
     if (error) throw error;
-    return data || [];
+    return data||[];
   } catch (e) {
-    // fallback to cache
+    setStatusErr(e);
     const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]');
-    showError('Load failed — showing cached results if available.');
     return cache.filter(r=>r.project===project);
   }
 }
 async function dbInsert(rec){
-  try{
-    const { error } = await SB.from('sessions').insert(rec);
-    if (error) throw error;
-  }catch(e){
-    // queue for later
-    const box=getOutbox(); box.push(rec); setOutbox(box);
-    syncPill.style.display='inline-flex';
-    showError('Saved locally (offline). Will sync when online.');
+  try { const { error } = await SB.from('sessions').insert(rec); if(error) throw error; }
+  catch(e){
+    // add to local outbox & cache
+    const out = JSON.parse(localStorage.getItem('outbox')||'[]'); out.push(rec); localStorage.setItem('outbox', JSON.stringify(out));
+    const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]'); cache.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(cache));
+    updateOfflinePill();
+    setStatusErr(e);
+    flushOutboxSoon();
   }
-  // update local cache (mirror)
-  const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]');
-  cache.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(cache));
 }
-async function dbDeleteAll(project){
-  // delete from server (best-effort), and clear cache entries too
-  try{
-    const { error } = await SB.from('sessions').delete().eq('project', project);
-    if (error) throw error;
-  }catch(e){
-    showError('Delete failed on server. You may need a Supabase delete policy.');
-  }
-  // clear from local cache
-  const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]').filter(r=>r.project!==project);
-  localStorage.setItem('sessions_cache', JSON.stringify(cache));
+async function dbDeleteProject(project){
+  try { const { error } = await SB.from('sessions').delete().eq('project', project); if(error) throw error; }
+  catch(e){ setStatusErr(e); }
 }
 
-// Table render
+// Outbox flush
+let flushTimer=null;
+function flushOutboxSoon(){ if(flushTimer) return; flushTimer = setTimeout(flushOutbox, 1500); }
+async function flushOutbox(){
+  clearTimeout(flushTimer); flushTimer=null;
+  const out = JSON.parse(localStorage.getItem('outbox')||'[]');
+  if(!out.length) { setSyncing(false); return; }
+  setSyncing(true);
+  const keep=[];
+  for (const rec of out){
+    try { const { error } = await SB.from('sessions').insert(rec); if(error) throw error; }
+    catch(e){ keep.push(rec); }
+  }
+  localStorage.setItem('outbox', JSON.stringify(keep));
+  setSyncing(keep.length>0);
+  if(keep.length>0){ flushOutboxSoon(); } // try again
+}
+
+// Table
+function badgeHtml(tier){ const cls=(tier||'Normal').toLowerCase(); return `<span class="badge ${cls}">${tier}</span>`; }
 function renderTable(rows){
   const body=document.getElementById('resultsBody');
-  let html='';
-  for(let i=0;i<rows.length;i++){
-    const r = rows[i];
-    const tier = r.effect_label || '';
-    const effectCell = tier ? badgeHtml(tier) : '';
-    html += '<tr>'
-      + '<td>'+(i+1)+'</td>'
-      + '<td>'+(r.tester||'')+'</td>'
-      + '<td>'+(r.title||'')+'</td>'
-      + '<td>'+new Date(r.start).toLocaleString()+'</td>'
-      + '<td>'+r.duration_min+'</td>'
-      + '<td>'+r.trials+'</td>'
-      + '<td>'+r.trial_bits+'</td>'
-      + '<td>'+r.alpha+'</td>'
-      + '<td>'+Number(r.z).toFixed(3)+'</td>'
-      + '<td>'+Number(r.p).toExponential(2)+'</td>'
-      + '<td>'+effectCell+'</td>'
-      + '</tr>';
-  }
-  body.innerHTML = html;
+  body.innerHTML = rows.map((r,i)=>{
+    return `<tr>
+      <td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td>
+      <td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td>
+      <td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td>
+      <td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td>
+      <td>${r.effect_label?badgeHtml(r.effect_label):''}</td>
+    </tr>`;
+  }).join('');
 }
 
 // Exports
 document.getElementById('exportCsv').addEventListener('click', async ()=>{
   const s=await dbFetch(PROJECT);
   const header=['project','tester','title','start','duration_min','trials','trial_bits','alpha','z','p','effect_label'];
-  const lines=[header.join(',')];
-  for(const r of s){ lines.push(header.map(k=> r[k]).join(',')); }
-  const blob=new Blob([lines.join('\n')],{type:'text/csv'}); const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='gclab_sessions_'+PROJECT+'.csv'; a.click(); URL.revokeObjectURL(url);
+  const lines=[header.join(',')].concat(s.map(r=> header.map(k=> r[k]).join(',')));
+  const url=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));
+  const a=document.createElement('a'); a.href=url; a.download=`gclab_sessions_${PROJECT}.csv`; a.click(); URL.revokeObjectURL(url);
 });
 document.getElementById('exportPdf').addEventListener('click', async ()=>{
   const s=await dbFetch(PROJECT);
@@ -347,88 +403,38 @@ document.getElementById('exportPdf').addEventListener('click', async ()=>{
   doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text('Group Coherence — All Sessions', 40, 40);
   doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text('Project: ' + PROJECT, 40, 58);
   const head=[['#','Tester','Title','Start','Min','Tests','Bits','Alpha','Z','p','Effect']];
-  const body = s.map((r,i)=>[i+1, r.tester||'', r.title||'', new Date(r.start).toLocaleString(), r.duration_min, r.trials, r.trial_bits, r.alpha, Number(r.z).toFixed(3), Number(r.p).toExponential(2), r.effect_label||'']);
+  const body = s.map((r,i)=>[i+1, r.tester||'', r.title||'', new Date(r.start).toLocaleString(), r.duration_min, r.trials, r.trial_bits, r.alpha, (+r.z).toFixed(3), (+r.p).toExponential(2), r.effect_label||'']);
   doc.autoTable({ head, body, startY: 72, styles:{fontSize:9, cellPadding:3}, headStyles:{fillColor:[14,165,233]} });
-  doc.save('group_coherence_sessions_'+PROJECT+'.pdf');
+  doc.save(`group_coherence_sessions_${PROJECT}.pdf`);
 });
-
-// Delete All
 document.getElementById('deleteAll').addEventListener('click', async ()=>{
-  if(!confirm('Are you sure you want to delete all data for "'+PROJECT+'"? This cannot be undone.')) return;
-  await dbDeleteAll(PROJECT);
+  if(!confirm(`Delete ALL data for project “${PROJECT}”? This cannot be undone.`)) return;
+  await dbDeleteProject(PROJECT);
   const rows=await dbFetch(PROJECT); renderTable(rows);
 });
 
-// RNG via Netlify Function with fallback
-async function qrng(len){
-  try{
-    const r = await fetch('/.netlify/functions/qrng?len='+len, { mode:'cors' });
-    if(!r.ok) throw new Error('qrng http '+r.status);
-    const j = await r.json();
-    const arr = j.data || [];
-    return new Uint16Array(arr.map(x=>x&0xFFFF));
-  }catch(e){
-    // fallback
-    const out=new Uint16Array(len);
-    crypto.getRandomValues(out);
-    showError('Using local RNG (offline).');
-    return out;
-  }
-}
-
-// Session logic
+// RNG session
 let session=null, elapsedTimer=null;
-const nameEl=document.getElementById('testerName');
-const titleEl=document.getElementById('sessionTitle');
-const durEl=document.getElementById('duration');
-const trialBitsEl=document.getElementById('trialBits');
-const alphaEl=document.getElementById('alpha');
-const startBtn=document.getElementById('startBtn');
-const stopBtn=document.getElementById('stopBtn');
-const markBtn=document.getElementById('markBtn');
-const elapsedEl=document.getElementById('elapsed');
-
-function lockUI(run){
-  [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn].forEach(el=> el.disabled=run);
-  stopBtn.disabled=!run; markBtn.disabled=!run;
-}
+function lockUI(run){ [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn].forEach(el=> el.disabled=run); stopBtn.disabled=!run; markBtn.disabled=!run; }
 function startElapsed(){
-  const t0=Date.now();
-  elapsedEl.textContent='Elapsed: 00:00';
+  const t0=Date.now(); elapsedEl.textContent='Elapsed: 00:00';
   elapsedTimer = setInterval(()=>{
     const ms=Date.now()-t0; const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000);
-    elapsedEl.textContent = 'Elapsed: '+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    elapsedEl.textContent = `Elapsed: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   }, 500);
 }
 function stopElapsed(){ if(elapsedTimer){ clearInterval(elapsedTimer); elapsedTimer=null; }}
 
-// effect setters
-function setLiveEffect(p, alpha){
-  const info=effectInfoFromP(p,alpha);
-  const el=document.getElementById('liveEffect');
-  el.className='effect '+info.cls;
-  el.textContent=info.text;
-  return info;
-}
-function setFinalEffect(p, alpha){
-  const info=effectInfoFromP(p,alpha);
-  const el=document.getElementById('finalEffect');
-  el.className='effect '+info.cls;
-  el.textContent='Session complete — '+info.text.replace(/^No unusual pattern detected — /,'').trim();
-  document.getElementById('finalCard').style.display='block';
-  return info;
-}
-
-// mark moment helper
-async function markMoment(cumZ, p, tier, plan, trials){
-  const rec={ project:PROJECT, tester:plan.tester, title:(plan.title||'')+' • Moment', start:new Date().toISOString(),
-    duration_min:0, trials:trials, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:p, effect_label:tier };
+async function markMoment(cumZ, p, alpha, plan, trials){
+  const tier = effectLabel(p, alpha).tier;
+  const rec={ project:PROJECT, tester:plan.tester, title:(plan.title? (plan.title+' • Moment') : 'Moment'), start:new Date().toISOString(), duration_min:0, trials:trials, trial_bits:plan.trial_bits, alpha:alpha, z:cumZ, p:p, effect_label:tier };
   await dbInsert(rec);
+  const rows=await dbFetch(PROJECT); renderTable(rows);
 }
 
-// Run loop
 async function runSession(){
-  const plan={ tester:(nameEl.value||'—').trim(), title:(titleEl.value||'').trim(), duration_min:Math.max(1,parseInt(durEl.value||'10',10)), trial_bits:Math.max(50,parseInt(trialBitsEl.value||'200',10)), alpha:alphaEl.value, start:new Date().toISOString() };
+  clearErr();
+  const plan={ tester:nameEl.value.trim()||'—', title:titleEl.value.trim(), duration_min:Math.max(1,parseInt(durEl.value||'10',10)), trial_bits:Math.max(50,parseInt(trialBitsEl.value||'200',10)), alpha:alphaEl.value, start:new Date().toISOString() };
   session={plan,zs:[],stop:false}; lockUI(true); clearPlot(); drawAxes(); startElapsed();
   const endTime=Date.now()+plan.duration_min*60*1000;
   try{
@@ -442,63 +448,49 @@ async function runSession(){
       document.getElementById('trials').textContent=session.zs.length;
       const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(session.zs.length);
       const p = twoSidedP(cumZ);
-      document.getElementById('cumZ').textContent=Number(cumZ).toFixed(3);
-      document.getElementById('pval').textContent=Number(p).toExponential(2);
-      const info=setLiveEffect(p, plan.alpha);
-      // Auto-mark every unusual moment (>= Possible)
-      if(info.tier==='Possible' || info.tier==='Strong' || info.tier==='Extraordinary'){
-        await markMoment(cumZ, p, info.tier, plan, session.zs.length);
-      }
+      document.getElementById('cumZ').textContent=cumZ.toFixed(3);
+      document.getElementById('pval').textContent=p.toExponential(2);
+      const tier = setLiveEffect(p, plan.alpha);
+      // auto-mark every unusual moment (>= Possible)
+      if (tier!=='Normal') { await markMoment(cumZ, p, plan.alpha, plan, session.zs.length); }
       plotSeries(session.zs, plan.alpha);
       await new Promise(r=> setTimeout(r,1000));
     }
     const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(Math.max(1,session.zs.length));
     const p = twoSidedP(cumZ);
-    const info=setFinalEffect(p, plan.alpha);
-    const rec={ project:PROJECT, tester:plan.tester, title:plan.title, start:plan.start, duration_min:plan.duration_min, trials:session.zs.length, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:p, effect_label:info.tier };
+    const tier = setFinalEffect(p, plan.alpha);
+    const rec={ project:PROJECT, tester:plan.tester, title:plan.title, start:plan.start, duration_min:plan.duration_min, trials:session.zs.length, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:p, effect_label:tier };
     await dbInsert(rec);
     const rows=await dbFetch(PROJECT); renderTable(rows);
   }catch(e){
-    showError(e.message||String(e));
+    showErr(e.message||String(e));
   }finally{
     stopElapsed(); lockUI(false); session=null;
-    flushOutbox();
+    flushOutboxSoon();
   }
 }
 
-// Buttons
-startBtn.addEventListener('click', ()=>{ if(session) return; showError(''); runSession(); });
+startBtn.addEventListener('click', ()=>{ if(session) return; runSession(); });
 stopBtn.addEventListener('click', ()=>{ if(session) session.stop=true; });
 markBtn.addEventListener('click', async ()=>{
   if(!session) return;
-  const zs=session.zs.slice(); if(!zs.length) return;
-  const cumZ=zs.reduce((a,b)=>a+b,0)/Math.sqrt(zs.length); const p=twoSidedP(cumZ);
-  const info=effectInfoFromP(p, session.plan.alpha);
-  await markMoment(cumZ, p, info.tier, session.plan, zs.length);
+  const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(Math.max(1,session.zs.length));
+  const p = twoSidedP(cumZ);
+  await markMoment(cumZ, p, session.plan.alpha, session.plan, session.zs.length);
 });
 
 // Boot
 async function boot(){
-  try{
-    const rows=await dbFetch(PROJECT);
-    renderTable(rows);
-  }catch(e){
-    showError(e.message||String(e));
-  }finally{
-    flushOutbox();
+  clearPlot(); drawAxes();
+  const rows=await dbFetch(PROJECT); renderTable(rows);
+  // service worker
+  if ('serviceWorker' in navigator){
+    try { await navigator.serviceWorker.register('./sw.js'); } catch(e){}
   }
+  // Try flushing any outbox at start
+  flushOutboxSoon();
 }
 boot();
-
-</script>
-
-<!-- Register SW last -->
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  });
-}
 </script>
 </body>
 </html>

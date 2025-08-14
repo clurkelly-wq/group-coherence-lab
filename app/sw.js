@@ -1,22 +1,25 @@
 
-// Simple SW: cache index for offline, stale-while-revalidate
-const CACHE = 'gclab-v1';
+// v10.6.3 service worker — stale-while-revalidate for index
+const CACHE = 'gclab-v1063';
 self.addEventListener('install', (e)=>{
   e.waitUntil(caches.open(CACHE).then(c=> c.addAll(['./','./index.html'])));
+  self.skipWaiting();
+});
+self.addEventListener('activate', (e)=>{
+  e.waitUntil(caches.keys().then(keys=> Promise.all(keys.map(k=> k===CACHE?null:caches.delete(k)))));
+  self.clients.claim();
 });
 self.addEventListener('fetch', (e)=>{
-  const req = e.request;
-  if(req.method!=='GET') return;
-  e.respondWith(
-    caches.match(req).then(cached=>{
-      const fetchP = fetch(req).then(res=>{
-        if(res && res.status===200 && res.type==='basic'){
-          const copy = res.clone();
-          caches.open(CACHE).then(c=> c.put(req, copy));
-        }
-        return res;
-      }).catch(()=> cached);
-      return cached || fetchP;
-    })
-  );
+  const url = new URL(e.request.url);
+  if (url.origin === location.origin && (url.pathname === '/' || url.pathname.endsWith('/index.html'))){
+    e.respondWith(
+      caches.match('./index.html').then(cached => {
+        const fetcher = fetch(e.request).then(resp => {
+          caches.open(CACHE).then(c=> c.put('./index.html', resp.clone()));
+          return resp;
+        }).catch(()=> cached);
+        return cached || fetcher;
+      })
+    );
+  }
 });
