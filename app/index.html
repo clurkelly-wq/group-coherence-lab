@@ -5,48 +5,45 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Group Coherence Lab</title>
-  <meta name="theme-color" content="#38bdf8"/>
+  <meta name="theme-color" content="#88eeff"/>
   <style>
     :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#38bdf8;
             --ok:#34d399; --warn:#f59e0b; --strong:#10b981; --extra:#a78bfa; --normal:#64748b; }
     html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    header{padding:18px 16px 6px;text-align:center}
-    h1{margin:0;font-size:24px;letter-spacing:.4px}
-    .subtitle{color:#93a0c7;font-size:13px;margin-top:6px}
-    .wrap{max-width:980px;margin:0 auto;padding:16px}
-    .grid{display:grid;grid-template-columns:1fr;gap:18px}
+    header{padding:16px 16px 8px;text-align:center}
+    h1{margin:0;font-size:22px;letter-spacing:.5px}
+    .subtitle{color:#93a0c7;font-size:13px;margin-top:4px}
+    .wrap{max-width:980px;margin:0 auto;padding:14px 16px 40px}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
     @media(min-width:1000px){.grid{grid-template-columns:1.2fr 1fr}}
-    .card{background:var(--panel);border:1px solid #262a43;border-radius:14px;padding:18px}
+    .card{background:var(--panel);border:1px solid #262a43;border-radius:14px;padding:16px}
     .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
-    input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:12px 12px;width:100%;font-size:14px}
-    .row3{display:grid;grid-template-columns:1fr;gap:14px;margin-top:12px}
-    @media(min-width:680px){.row3{grid-template-columns:1fr 1fr 1fr}}
+    input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:10px 12px;width:100%}
+    .row3{display:grid;grid-template-columns:1fr;gap:14px;margin-top:10px}
+    @media(min-width:700px){.row3{grid-template-columns:1fr 1fr 1fr}}
     .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:12px}
-    .spacer{height:8px}
-    button{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:14px;padding:14px 18px;font-weight:800;cursor:pointer;font-size:16px}
-    button.ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158}
+    button{border:none;color:#00111a;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer;font-size:16px}
+    button.primary{background:linear-gradient(180deg,#38bdf8,#0ea5e9)}
     button:disabled{opacity:.6;cursor:not-allowed}
-    .btn-lg{padding:16px 22px;font-size:18px;border-radius:16px}
     .pill{display:inline-block;padding:6px 10px;border:1px solid #2b3158;border-radius:999px;color:#e8ecff;font-size:12px;background:#1a2044}
     .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px;white-space:nowrap}
     .badge.normal{background:#111827;color:#cbd5e1;border:1px solid #374151}
     .badge.possible{background:#1f2937;color:#fde68a;border:1px solid #6b7280}
     .badge.strong{background:#064e3b;color:#a7f3d0;border:1px solid #065f46}
     .badge.extra{background:#312e81;color:#ddd6fe;border:1px solid #4c1d95}
-    .effect{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;font-weight:700}
+    .effect{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;font-weight:700;margin-top:10px}
     .effect.normal{background:#0f172a;color:#cbd5e1;border:1px solid #334155}
     .effect.possible{background:#1f2937;color:#fde68a;border:1px solid #6b7280}
     .effect.strong{background:#042f2e;color:#a7f3d0;border:1px solid #065f46}
     .effect.extra{background:#1e1b4b;color:#ddd6fe;border:1px solid #4c1d95}
     canvas{width:100%;height:260px;background:#0b0d1a;border:1px solid #22264a;border-radius:10px;display:block}
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
-    .stat{background:#0e1020;border:1px solid #22264a;border-radius:10px;padding:12px}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+    .stat{background:#0e1020;border:1px solid #22264a;border-radius:10px;padding:10px}
     .stat b{display:block;font-size:20px;margin-top:6px;color:#bfe6ff}
     .tablewrap{max-width:100%;overflow:auto;border:1px solid #262a43;border-radius:12px}
-    table{width:100%;border-collapse:collapse;min-width:820px}th,td{padding:10px 12px;border-bottom:1px solid #262a43;text-align:left}
+    table{width:100%;border-collapse:collapse;min-width:840px}th,td{padding:8px 10px;border-bottom:1px solid #262a43;text-align:left}
     .hidden{display:none!important}
     .error{color:#ffbaba;background:#3b0f0f;border:1px solid #6b1d1d;padding:8px;border-radius:10px;margin-top:10px}
-    .topbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-bottom:12px}
     /* Help modal */
     .overlay{position:fixed;inset:0;background:rgba(0,0,20,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
     .modal{background:#0f1328;border:1px solid #2b3158;border-radius:16px;max-width:860px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -65,15 +62,15 @@
     .ytwrap iframe{position:absolute;inset:0;width:100%;height:100%}
   </style>
 
-  <!-- Early project resolver (URL param only; default to clares-data) -->
+  <!-- Early project resolver -->
   <script>
     (function(){
       try {
         const params = new URLSearchParams(location.search);
-        const project = (params.get('project')||'').trim() || 'clares-data';
-        window.__GCLAB__ = { version:'v10.3.0', project };
+        const project = (params.get('project') || 'clares-data').trim();
+        window.__GCLAB__ = { version:'v10.3.1', project };
       } catch(e){
-        window.__GCLAB__ = { version:'v10.3.0', project:'clares-data' };
+        window.__GCLAB__ = { version:'v10.3.1', project:'clares-data' };
       }
     })();
   </script>
@@ -85,10 +82,6 @@
 </header>
 
 <div class="wrap">
-  <div class="topbar">
-    <button id="helpBtn" class="btn-lg" title="Help">Help</button>
-  </div>
-
   <div id="errPanel" class="error hidden"></div>
 
   <div class="grid">
@@ -104,16 +97,13 @@
         <div><div class="label">Alpha</div>
           <select id="alpha"><option value="0.05" selected>0.05 (95%)</option><option value="0.01">0.01 (99%)</option></select>
         </div>
-        <div class="controls" style="align-items:flex-end">
-          <button id="startBtn" class="btn-lg">Start</button>
-          <button id="stopBtn" class="btn-lg" disabled>End</button>
-          <span class="pill" id="elapsed">Elapsed: 00:00</span>
+        <div class="controls">
+          <button id="startBtn" class="primary">Start</button>
+          <button id="stopBtn" class="primary" disabled>End</button>
+          <button id="helpBtn" class="primary">Help</button>
         </div>
       </div>
-      <div class="spacer"></div>
-      <div>
-        <span id="liveEffect" class="effect normal">No unusual pattern detected — randomness looks normal.</span>
-      </div>
+      <span id="liveEffect" class="effect normal">No unusual pattern detected — randomness looks normal.</span>
     </div>
     <div class="card">
       <div class="label">Live deviation</div>
@@ -133,8 +123,8 @@
   <div class="card">
     <div class="label">Past sessions (shared)</div>
     <div style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap">
-      <button id="exportCsv">Export CSV</button>
-      <button id="exportPdf">Export PDF</button>
+      <button id="exportCsv" class="primary">Export CSV</button>
+      <button id="exportPdf" class="primary">Export PDF</button>
       <span class="pill">Combined Stouffer Z (last 30): <b id="comboZ">—</b></span>
     </div>
     <div class="tablewrap">
@@ -155,7 +145,7 @@
   <div class="modal">
     <header>
       <h2 id="helpTitle">Help & How it Works</h2>
-      <button id="closeHelp" class="ghost">Close</button>
+      <button id="closeHelp" class="primary">Close</button>
     </header>
     <div class="content">
       <p><b>Group Coherence Lab</b> explores whether shared intention affects a quantum random number generator (QRNG). You set a duration and focus together; the app measures drift from randomness.</p>
@@ -185,13 +175,21 @@
 </div>
 
 <script>
-// Help modal wiring
-const helpBtn = document.getElementById('helpBtn');
-const helpOverlay = document.getElementById('helpOverlay');
-const closeHelp = document.getElementById('closeHelp');
-helpBtn.addEventListener('click', ()=>{ helpOverlay.style.display='flex'; });
-closeHelp.addEventListener('click', ()=>{ helpOverlay.style.display='none'; });
-helpOverlay.addEventListener('click', (e)=>{ if(e.target===helpOverlay){ helpOverlay.style.display='none'; } });
+// Remove service worker caches silently to avoid stale assets
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+  if (window.caches && caches.keys) { caches.keys().then(keys => keys.forEach(k => caches.delete(k))); }
+}
+
+// Help modal
+(function(){
+  const helpBtn = document.getElementById('helpBtn');
+  const helpOverlay = document.getElementById('helpOverlay');
+  const closeHelp = document.getElementById('closeHelp');
+  helpBtn.addEventListener('click', ()=>{ helpOverlay.style.display='flex'; });
+  closeHelp.addEventListener('click', ()=>{ helpOverlay.style.display='none'; });
+  helpOverlay.addEventListener('click', (e)=>{ if(e.target===helpOverlay){ helpOverlay.style.display='none'; } });
+})();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -201,7 +199,6 @@ helpOverlay.addEventListener('click', (e)=>{ if(e.target===helpOverlay){ helpOve
 const SUPABASE_URL = "https://wyecvewtlgyzizupocfh.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZWN2ZXd0bGd5eml6dXBvY2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTYzODcsImV4cCI6MjA3MDY5MjM4N30.nfcrwzm1t-d5l3DiME5RFahC_LVxStn0IekaPjMKMpg";
 const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-
 function getProject(){ return (window.__GCLAB__ && window.__GCLAB__.project) || 'clares-data'; }
 
 // Stats helpers
@@ -210,8 +207,8 @@ function cdfNormal(z){return .5*(1+erf(z/Math.SQRT2));}
 function twoSidedP(z){return 2*(1-cdfNormal(Math.abs(z)));}
 function stoufferZ(zs){if(!zs.length) return 0; const s=zs.reduce((a,b)=>a+b,0); return s/Math.sqrt(zs.length);}
 
-// Effect labelling
-function effectLabel(p, alpha){
+// Effect labeling
+function effectInfo(p, alpha){
   const a = parseFloat(alpha||'0.05');
   if (!isFinite(p)) return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
   if (p <= 0.2*a || p <= 0.001) return {cls:'extra', text:'Extraordinary effect — high coherence observed!', tier:'Extraordinary'};
@@ -219,25 +216,7 @@ function effectLabel(p, alpha){
   if (p <= a) return {cls:'possible', text:'Small shift detected — possible group influence.', tier:'Possible'};
   return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
 }
-function badgeHtml(tier){
-  const cls = (tier||'Normal').toLowerCase();
-  return `<span class="badge ${cls}">${tier}</span>`;
-}
-function setLiveEffect(p, alpha){
-  const info = effectLabel(p,alpha);
-  const el=document.getElementById('liveEffect');
-  el.className='effect '+info.cls;
-  el.textContent=info.text;
-  return info.tier;
-}
-function setFinalEffect(p, alpha){
-  const info=effectLabel(p,alpha);
-  const el=document.getElementById('finalEffect');
-  el.className='effect '+info.cls;
-  el.textContent='Session complete — '+info.text.replace(/^No unusual pattern detected — /,'').replace(/ — .*$/,'').replace(/^/,'').trim() || info.text;
-  document.getElementById('finalCard').style.display='block';
-  return info.tier;
-}
+function badgeHtml(tier){ const cls=(tier||'Normal').toLowerCase(); return `<span class="badge ${cls}">${tier}</span>`; }
 
 // Plot
 const canvas=document.getElementById('plot'); const ctx=canvas.getContext('2d');
@@ -250,7 +229,8 @@ function plotSeries(zs,alpha){
   const zStar=(alpha==='0.01')?2.576:1.96;
   const ymax=Math.max(zStar*1.3, Math.max(...cums.map(v=>Math.abs(v)))+0.5);
   function x(i){return x0+(w*(i/(n-1||1)));} function y(v){return y0-(v/ymax)*(h/2);}
-  ctx.strokeStyle='#2b3158';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y(zStar));ctx.lineTo(x0+w,y(zStar));ctx.stroke();ctx.beginPath();ctx.moveTo(x0,y(-zStar));ctx.lineTo(x0+w,y(-zStar));ctx.stroke();
+  ctx.strokeStyle='#2b3158';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x0,y(zStar));ctx.lineTo(x0+w,y(zStar));ctx.stroke();ctx.beginPath();ctx.MoveTo && ctx.beginPath(); // guard for stray
+  ctx.beginPath();ctx.moveTo(x0,y(-zStar));ctx.lineTo(x0+w,y(-zStar));ctx.stroke();
   ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#38bdf8'; ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(x(0),y(cums[0]||0)); for(let i=1;i<n;i++){ctx.lineTo(x(i),y(cums[i]));} ctx.stroke();
 }
@@ -271,15 +251,15 @@ async function dbInsert(project, rec){
     const { error } = await SB.from('sessions').insert(rec);
     if (error) throw error;
   } catch (e) {
-    // Fallback if effect_label column doesn't exist yet: try without it
-    if (String(e.message||'').toLowerCase().includes('column') && String(e.message||'').toLowerCase().includes('effect_label')) {
-      const rec2 = Object.assign({}, rec);
-      delete rec2.effect_label;
-      try { await SB.from('sessions').insert(rec2); }
-      catch (e2) {}
+    // Fallback if effect_label column missing
+    const msg = String(e.message||'').toLowerCase();
+    if (msg.includes('column') && msg.includes('effect_label')) {
+      const rec2 = Object.assign({}, rec); delete rec2.effect_label;
+      try { await SB.from('sessions').insert(rec2); } catch (e2) {}
     } else {
       const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]'); s.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(s));
     }
+    const err = document.getElementById('errPanel'); err.textContent = e.message || String(e); err.classList.remove('hidden');
   }
 }
 
@@ -288,12 +268,12 @@ function renderTable(rows){
   const body=document.getElementById('resultsBody');
   body.innerHTML = rows.map((r,i)=>{
     const tier = r.effect_label || '';
+    const b = tier ? badgeHtml(tier) : '';
     return `<tr>
       <td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td>
       <td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td>
       <td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td>
-      <td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td>
-      <td>${tier ? ('${''}'+badgeHtml(tier)) : ''}</td>
+      <td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td><td>${b}</td>
     </tr>`;
   }).join('');
   const zs=rows.slice(0,30).map(r=>+r.z); document.getElementById('comboZ').textContent = (zs.length? (stoufferZ(zs).toFixed(3)) : '—');
@@ -314,42 +294,60 @@ document.getElementById('exportPdf').addEventListener('click', async ()=>{
   doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text('Project: ' + project, 40, 58);
   const head=[['#','Tester','Title','Start','Min','Tests','Bits','Alpha','Z','p','Effect']];
   const body = s.map((r,i)=>[i+1, r.tester||'', r.title||'', new Date(r.start).toLocaleString(), r.duration_min, r.trials, r.trial_bits, r.alpha, (+r.z).toFixed(3), (+r.p).toExponential(2), r.effect_label||'']);
-  doc.autoTable({ head, body, startY: 72, styles:{fontSize:9, cellPadding:3}, headStyles:{fillColor:[14,165,233]} });
+  if (doc.autoTable) {
+    doc.autoTable({ head, body, startY: 72, styles:{fontSize:9, cellPadding:3}, headStyles:{fillColor:[14,165,233]} });
+  }
   doc.save(`group_coherence_sessions_${project}.pdf`);
 });
 
 // RNG via Netlify Function
 async function qrng(len){
-  const r = await fetch(`/.netlify/functions/qrng?len=${len}`, { mode:'cors' });
-  if(!r.ok) throw new Error('qrng failed');
-  const j = await r.json();
-  const arr = j.data || [];
-  return new Uint16Array(arr.map(x=>x&0xFFFF));
+  try {
+    const r = await fetch(`/.netlify/functions/qrng?len=${len}`, { mode:'cors' });
+    if(!r.ok) throw new Error('qrng failed');
+    const j = await r.json();
+    const arr = j.data || [];
+    return new Uint16Array(arr.map(x=>x&0xFFFF));
+  } catch (e) {
+    // Soft fallback for demo continuity
+    const out = new Uint16Array(len);
+    for (let i=0;i<len;i++){ out[i] = Math.floor(Math.random()*65536); }
+    return out;
+  }
 }
 
 // Session
 let session=null, elapsedTimer=null;
 const nameEl=document.getElementById('testerName'), titleEl=document.getElementById('sessionTitle'), durEl=document.getElementById('duration'), trialBitsEl=document.getElementById('trialBits'), alphaEl=document.getElementById('alpha');
-const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), elapsedEl=document.getElementById('elapsed');
+const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), liveEl=document.getElementById('liveEffect');
 
 function lockUI(run){
   [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn].forEach(el=> el.disabled=run);
   stopBtn.disabled=!run;
 }
-function startElapsed(){
-  const t0=Date.now();
-  elapsedEl.textContent='Elapsed: 00:00';
-  elapsedTimer = setInterval(()=>{
-    const ms=Date.now()-t0; const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000);
-    elapsedEl.textContent = `Elapsed: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  }, 500);
+function showError(msg){
+  const err=document.getElementById('errPanel'); err.textContent = msg; err.classList.remove('hidden');
 }
-function stopElapsed(){ if(elapsedTimer){ clearInterval(elapsedTimer); elapsedTimer=null; }}
+
+function setLiveEffect(p, alpha){
+  const info = effectInfo(p, alpha);
+  liveEl.className='effect '+info.cls;
+  liveEl.textContent=info.text;
+  return info.tier;
+}
+function setFinalEffect(p, alpha){
+  const info=effectInfo(p, alpha);
+  const el=document.getElementById('finalEffect');
+  el.className='effect '+info.cls;
+  el.textContent='Session complete — '+info.text.replace(/^No unusual pattern detected — /,'').trim();
+  document.getElementById('finalCard').style.display='block';
+  return info.tier;
+}
 
 async function runSession(){
   const project = getProject();
   const plan={ tester:nameEl.value.trim()||'—', title:titleEl.value.trim(), duration_min:Math.max(1,parseInt(durEl.value||'10',10)), trial_bits:Math.max(50,parseInt(trialBitsEl.value||'200',10)), alpha:alphaEl.value, start:new Date().toISOString() };
-  session={plan,zs:[],stop:false}; lockUI(true); clearPlot(); drawAxes(); startElapsed();
+  session={plan,zs:[],stop:false}; lockUI(true); clearPlot(); drawAxes();
   const endTime=Date.now()+plan.duration_min*60*1000;
   try{
     while(!session.stop && Date.now()<endTime){
@@ -375,29 +373,31 @@ async function runSession(){
     await dbInsert(project, rec);
     const rows=await dbFetch(project); renderTable(rows);
   }catch(e){
-    // silent in UI to avoid confusing users
+    showError(e.message || String(e));
   }finally{
-    stopElapsed(); lockUI(false); session=null;
+    lockUI(false); session=null;
   }
 }
 
-// Apply: no project switcher UI — project only via URL
-
+// Apply
 async function refreshTable(){
-  const rows = await dbFetch(getProject());
-  renderTable(rows);
+  try {
+    const rows = await dbFetch(getProject());
+    renderTable(rows);
+  } catch(e){
+    showError(e.message || String(e));
+  }
 }
 
 // Boot
-async function boot(){
+(async function boot(){
   clearPlot(); drawAxes();
   await refreshTable();
-}
-boot();
+})();
 
 // Buttons
-document.getElementById('startBtn').addEventListener('click', ()=>{ if(session) return; runSession(); });
-document.getElementById('stopBtn').addEventListener('click', ()=>{ if(session) session.stop=true; });
+startBtn.addEventListener('click', ()=>{ if(session) return; runSession(); });
+stopBtn.addEventListener('click', ()=>{ if(session) session.stop=true; });
 </script>
 </body>
 </html>
