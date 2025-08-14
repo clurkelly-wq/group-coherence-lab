@@ -30,6 +30,11 @@
     button.ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158}
     button:disabled{opacity:.6;cursor:not-allowed}
     .pill{display:inline-block;padding:6px 10px;border:1px solid #2b3158;border-radius:999px;color:#e8ecff;font-size:12px;background:#1a2044}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px;white-space:nowrap}
+    .badge.normal{background:#111827;color:#cbd5e1;border:1px solid #374151}
+    .badge.possible{background:#1f2937;color:#fde68a;border:1px solid #6b7280}
+    .badge.strong{background:#064e3b;color:#a7f3d0;border:1px solid #065f46}
+    .badge.extra{background:#312e81;color:#ddd6fe;border:1px solid #4c1d95}
     .effect{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;font-weight:700}
     .effect.normal{background:#0f172a;color:#cbd5e1;border:1px solid #334155}
     .effect.possible{background:#1f2937;color:#fde68a;border:1px solid #6b7280}
@@ -40,12 +45,29 @@
     .stat{background:#0e1020;border:1px solid #22264a;border-radius:10px;padding:10px}
     .stat b{display:block;font-size:20px;margin-top:6px;color:#bfe6ff}
     .tablewrap{max-width:100%;overflow:auto;border:1px solid #262a43;border-radius:12px}
-    table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:8px 10px;border-bottom:1px solid #262a43;text-align:left}
+    table{width:100%;border-collapse:collapse;min-width:820px}th,td{padding:8px 10px;border-bottom:1px solid #262a43;text-align:left}
     .hidden{display:none!important}
     .error{color:#ffbaba;background:#3b0f0f;border:1px solid #6b1d1d;padding:8px;border-radius:10px;margin-top:10px}
     .topcard{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
     .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
     .flexgap{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+    /* Help modal */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,20,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+    .modal{background:#0f1328;border:1px solid #2b3158;border-radius:16px;max-width:860px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+    .modal header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #24304f}
+    .modal h2{margin:0;font-size:18px}
+    .modal .content{padding:16px}
+    .legend{display:grid;grid-template-columns:1fr;gap:8px;margin:8px 0 16px}
+    .legend .row{display:flex;align-items:center;gap:10px}
+    .legend .swatch{width:16px;height:16px;border-radius:4px;border:1px solid #2b3158}
+    .swatch.grey{background:#111827}
+    .swatch.yellow{background:#1f2937}
+    .swatch.green{background:#064e3b}
+    .swatch.purple{background:#312e81}
+    .muted{color:#93a0c7}
+    .ytwrap{position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;border:1px solid #24304f;background:#000}
+    .ytwrap iframe{position:absolute;inset:0;width:100%;height:100%}
   </style>
 
   <!-- Early project resolver -->
@@ -57,9 +79,9 @@
         const project = urlProj || (localStorage.getItem('project_code')||'').trim() || 'clares-data';
         localStorage.setItem('project_code', project);
         localStorage.setItem('project_locked','1');
-        window.__GCLAB__ = { version:'v10.2.1', project, lastError:'', rows:undefined };
+        window.__GCLAB__ = { version:'v10.2.3', project, lastError:'', rows:undefined };
       } catch(e){
-        window.__GCLAB__ = { version:'v10.2.1', project:'clares-data', lastError:'(init) '+(e.message||e), rows:undefined };
+        window.__GCLAB__ = { version:'v10.2.3', project:'clares-data', lastError:'(init) '+(e.message||e), rows:undefined };
       }
     })();
   </script>
@@ -70,7 +92,7 @@
   <div class="subtitle">Testing how our consciousness affects a quantum random number generator</div>
 </header>
 
-<div class="statusbar" id="statusbar">v10.2.1 • Project: loading… • Rows: — • Last error: —</div>
+<div class="statusbar" id="statusbar">v10.2.3 • Project: loading… • Rows: — • Last error: —</div>
 
 <div class="wrap">
   <div class="card topcard">
@@ -79,6 +101,7 @@
       <span class="pill" id="clock">Idle</span>
     </div>
     <div class="controls">
+      <button id="helpBtn" class="ghost">Help</button>
       <input id="projectInput" placeholder="Project code" style="width:200px"/>
       <button id="applyProject" class="ghost">Apply</button>
     </div>
@@ -144,10 +167,44 @@
   </div>
 </div>
 
+<!-- Help Modal -->
+<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="modal">
+    <header>
+      <h2 id="helpTitle">Help & How it Works</h2>
+      <button id="closeHelp" class="ghost">Close</button>
+    </header>
+    <div class="content">
+      <p><b>Group Coherence Lab</b> explores whether shared intention affects a quantum random number generator (QRNG). You set a duration and focus together; the app measures drift from randomness.</p>
+      <p class="muted">Two knobs you can adjust:</p>
+      <ul>
+        <li><b>Alpha</b>: how strict the test is. 0.05 is standard (easier to see effects); 0.01 is stricter (harder to trigger but fewer “false alarms”).</li>
+        <li><b>Trial size</b>: how many bits per test. Small = faster, but noisier. Large = slower, but steadier.</li>
+      </ul>
+      <hr style="border-color:#24304f;border-style:solid;border-width:1px 0 0;margin:12px 0"/>
+      <p><b>Color legend (based on cumulative z‑score)</b></p>
+      <div class="legend">
+        <div class="row"><span class="swatch grey"></span> <b>Grey — No unusual pattern</b> <span class="muted">| |z| &lt; 1.96</span></div>
+        <div class="row"><span class="swatch yellow"></span> <b>Yellow — Possible group influence</b> <span class="muted">| 1.96 ≤ |z| &lt; 2.58</span></div>
+        <div class="row"><span class="swatch green"></span> <b>Green — Strong effect</b> <span class="muted">| 2.58 ≤ |z| &lt; 3.29</span></div>
+        <div class="row"><span class="swatch purple"></span> <b>Purple — Extraordinary coherence</b> <span class="muted">| |z| ≥ 3.29</span></div>
+      </div>
+      <p class="muted">Tip: Larger groups or deeper coherence often show smoother, stronger drift.</p>
+      <hr style="border-color:#24304f;border-style:solid;border-width:1px 0 0;margin:12px 0"/>
+      <p><b>Watch: Quick intro</b></p>
+      <div class="ytwrap">
+        <iframe src="https://www.youtube.com/embed/Sp7-6850Mls" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // Prime status
 (function primeStatus(){
-  const S = window.__GCLAB__ || {version:'v10.2.1', project:'clares-data'};
+  const S = window.__GCLAB__ || {version:'v10.2.3', project:'clares-data'};
   const status = document.getElementById('statusbar');
   status.textContent = `${S.version} • Project: ${S.project} • Rows: — • Last error: ${S.lastError||'—'}`;
   document.getElementById('projectBadge').textContent = 'Project: ' + S.project + ' (locked)';
@@ -160,6 +217,14 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
   if (window.caches && caches.keys) { caches.keys().then(keys => keys.forEach(k => caches.delete(k))); }
 }
+
+// Help modal wiring
+const helpBtn = document.getElementById('helpBtn');
+const helpOverlay = document.getElementById('helpOverlay');
+const closeHelp = document.getElementById('closeHelp');
+helpBtn.addEventListener('click', ()=>{ helpOverlay.style.display='flex'; });
+closeHelp.addEventListener('click', ()=>{ helpOverlay.style.display='none'; });
+helpOverlay.addEventListener('click', (e)=>{ if(e.target===helpOverlay){ helpOverlay.style.display='none'; } });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -172,7 +237,7 @@ const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 // Status helper
 function setStatus(rows, err){
-  const S = window.__GCLAB__ || { version:'v10.2.1', project:'clares-data' };
+  const S = window.__GCLAB__ || { version:'v10.2.3', project:'clares-data' };
   const rowsText = (rows === undefined || rows === null) ? '—' : rows;
   const s = document.getElementById('statusbar');
   s.textContent = `${S.version} • Project: ${S.project} • Rows: ${rowsText} • Last error: ${err || '—'}`;
@@ -194,6 +259,10 @@ function effectLabel(p, alpha){
   if (p <= 0.5*a || p <= 0.01) return {cls:'strong', text:'Strong effect detected — group focus seems to influence the RNG.', tier:'Strong'};
   if (p <= a) return {cls:'possible', text:'Small shift detected — possible group influence.', tier:'Possible'};
   return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
+}
+function badgeHtml(tier){
+  const cls = (tier||'Normal').toLowerCase();
+  return `<span class="badge ${cls}">${tier}</span>`;
 }
 function setLiveEffect(p, alpha){
   const info = effectLabel(p,alpha);
@@ -262,12 +331,16 @@ async function dbInsert(project, rec){
 // Table
 function renderTable(rows){
   const body=document.getElementById('resultsBody');
-  body.innerHTML = rows.map((r,i)=>`<tr>
-    <td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td>
-    <td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td>
-    <td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td>
-    <td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td><td>${r.effect_label||''}</td>
-  </tr>`).join('');
+  body.innerHTML = rows.map((r,i)=>{
+    const tier = r.effect_label || '';
+    return `<tr>
+      <td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td>
+      <td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td>
+      <td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td>
+      <td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td>
+      <td>${tier ? ('${''}'+badgeHtml(tier)) : ''}</td>
+    </tr>`;
+  }).join('');
   const zs=rows.slice(0,30).map(r=>+r.z); document.getElementById('comboZ').textContent = (zs.length? (stoufferZ(zs).toFixed(3)) : '—');
 }
 
