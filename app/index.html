@@ -12,10 +12,11 @@
   <style>
     :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#88eeff; }
     html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    header{padding:20px 16px;text-align:center;position:relative}
+    header{padding:16px 16px 8px;text-align:center;position:relative}
     h1{margin:0;font-size:22px;letter-spacing:.5px}
     .subtitle{color:#93a0c7;font-size:13px;margin-top:4px}
-    .wrap{max-width:980px;margin:0 auto;padding:0 16px 40px}
+    .statusbar{font-size:12px;color:#cde3ff;background:#0e1933;border-top:1px solid #2b3158;border-bottom:1px solid #2b3158;padding:8px 16px;text-align:center}
+    .wrap{max-width:980px;margin:0 auto;padding:12px 16px 40px}
     .grid{display:grid;grid-template-columns:1fr;gap:16px}
     @media(min-width:1000px){.grid{grid-template-columns:1.2fr 1fr}}
     .card{background:var(--panel);border:1px solid #262a43;border-radius:14px;padding:16px}
@@ -32,8 +33,7 @@
     table{width:100%;border-collapse:collapse}th,td{padding:6px 8px;border-bottom:1px solid #262a43;text-align:left}
     .ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158;padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer}
     .hidden{display:none!important}
-    .error{color:#ffbaba;background:#3b0f0f;border:1px solid #6b1d1d;padding:8px;border-radius:10px}
-    .debug{font-size:12px;color:#cde3ff;background:#0e1933;border:1px dashed #335; padding:10px;border-radius:10px}
+    .error{color:#ffbaba;background:#3b0f0f;border:1px solid #6b1d1d;padding:8px;border-radius:10px;margin-top:10px}
   </style>
 </head>
 <body>
@@ -41,6 +41,10 @@
   <h1>Group Coherence Lab</h1>
   <div class="subtitle">Testing how our consciousness affects a quantum random number generator</div>
 </header>
+
+<div class="statusbar" id="statusbar">
+  v10.1.5 • Project: — • Rows: — • Last error: —
+</div>
 
 <div class="wrap">
   <div class="card" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between">
@@ -52,12 +56,10 @@
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <input id="projectInput" placeholder="Project code" style="width:200px"/>
       <button id="applyProject" class="ghost">Apply</button>
-      <button id="helpBtn" class="ghost">Help</button>
     </div>
   </div>
 
-  <div id="debugPanel" class="card debug hidden"></div>
-  <div id="errPanel" class="card error hidden"></div>
+  <div id="errPanel" class="error hidden"></div>
 
   <div class="grid">
     <div class="card">
@@ -102,7 +104,7 @@
 </div>
 
 <script>
-// Kill any SW/caches
+// Remove service worker/caches
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
   if (window.caches && caches.keys) { caches.keys().then(keys => keys.forEach(k => caches.delete(k))); }
@@ -113,16 +115,15 @@ const SUPABASE_URL = "https://wyecvewtlgyzizupocfh.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZWN2ZXd0bGd5eml6dXBvY2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTYzODcsImV4cCI6MjA3MDY5MjM4N30.nfcrwzm1t-d5l3DiME5RFahC_LVxStn0IekaPjMKMpg";
 const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// Debug flag
-const DEBUG = new URLSearchParams(location.search).get('debug') === '1';
-function showDebug(info){
-  if(!DEBUG) return;
-  const el=document.getElementById('debugPanel'); el.classList.remove('hidden');
-  el.textContent = JSON.stringify(info, null, 2);
+// Status helpers
+function setStatus({project, rows, error}){
+  const s=document.getElementById('statusbar');
+  s.textContent = `v10.1.5 • Project: ${project||'—'} • Rows: ${rows!==undefined?rows:'—'} • Last error: ${error||'—'}`;
+  const pill=document.getElementById('projectBadge');
+  pill.textContent = 'Project: ' + (project||'—') + ' (locked)';
+  if(error){ const e=document.getElementById('errPanel'); e.textContent=error; e.classList.remove('hidden'); }
 }
-function showError(msg){
-  const el=document.getElementById('errPanel'); el.classList.remove('hidden'); el.textContent = msg;
-}
+let lastError='';
 
 // Project handling
 function computeInitialProject(){
@@ -136,9 +137,9 @@ function setProject(p){
   const code = (p||'').trim() || 'clares-data';
   localStorage.setItem('project_code', code);
   localStorage.setItem('project_locked', '1');
-  document.getElementById('projectBadge').textContent = 'Project: ' + code + ' (locked)';
   document.getElementById('projectInput').value = code;
-  return code;
+  setStatus({project: code, rows: '…', error: lastError});
+  refreshTable(code);
 }
 function getProject(){ return localStorage.getItem('project_code') || 'clares-data'; }
 
@@ -179,9 +180,10 @@ async function dbFetch(project){
   try {
     const { data, error } = await SB.from('sessions').select('*').eq('project', project).order('start', { ascending:false }).limit(500);
     if (error) throw error;
+    lastError='';
     return data || [];
   } catch (e) {
-    showError('Supabase read failed: ' + e.message);
+    lastError = e.message;
     const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]');
     return cache.filter(r=>r.project===project);
   }
@@ -190,8 +192,9 @@ async function dbInsert(project, rec){
   try {
     const { error } = await SB.from('sessions').insert(rec);
     if (error) throw error;
+    lastError='';
   } catch (e) {
-    showError('Supabase write failed (saved locally): ' + e.message);
+    lastError = e.message;
     const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]'); s.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(s));
   }
 }
@@ -265,53 +268,37 @@ async function runSession(){
     await dbInsert(project, rec);
     const rows=await dbFetch(project); renderTable(rows);
   }catch(e){
-    showError('Session compute failed: ' + e.message);
+    lastError = e.message;
   }finally{
     stopElapsed(); lockUI(false); session=null;
+    setStatus({project:getProject(), rows:'—', error:lastError});
   }
 }
 
-// Apply project button
+// Project UI
 document.getElementById('applyProject').addEventListener('click', ()=>{
   const p = document.getElementById('projectInput').value;
-  const code = setProject(p);
-  refreshTable(code);
+  setProject(p);
 });
 document.getElementById('projectInput').addEventListener('keydown', (e)=>{
-  if(e.key==='Enter'){ const code=setProject(e.target.value); refreshTable(code); }
+  if(e.key==='Enter'){ setProject(e.target.value); }
 });
 
 async function refreshTable(project){
-  try{
-    const rows=await dbFetch(project);
-    renderTable(rows);
-    showDebug({project, rows: rows.length, sourceNote: document.getElementById('sourceNote')?.textContent || ''});
-  }catch(e){
-    showError('Refresh failed: ' + e.message);
-  }
+  const rows=await dbFetch(project);
+  renderTable(rows);
+  setStatus({project, rows: rows.length, error:lastError});
 }
 
 // Boot
 async function boot(){
-  try{
-    const initial = computeInitialProject();
-    const code = setProject(initial);
-    clearPlot(); drawAxes();
-    await refreshTable(code);
-    // Fill project input explicitly
-    document.getElementById('projectInput').value = code;
-    // Help modal wires
-    const helpBtn=document.getElementById('helpBtn');
-    const helpBackdrop=document.createElement('div');
-    helpBackdrop.className='card'; helpBackdrop.style.marginTop='10px'; helpBackdrop.innerHTML='<b>Tip:</b> Add <code>?debug=1</code> to the URL to show debug info below.';
-    if (DEBUG) document.querySelector('.wrap').insertBefore(helpBackdrop, document.querySelector('.wrap').children[1]);
-  }catch(e){
-    showError('Boot failed: ' + e.message);
-  }
+  const initial = computeInitialProject();
+  setProject(initial); // sets badge, input, status
+  clearPlot(); drawAxes();
 }
 boot();
 
-// Plot wiring
+// Wire session buttons
 document.getElementById('startBtn').addEventListener('click', ()=>{ if(session) return; runSession(); });
 document.getElementById('stopBtn').addEventListener('click', ()=>{ if(session) session.stop=true; });
 </script>
