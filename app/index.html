@@ -7,9 +7,10 @@
   <title>Group Coherence Lab</title>
   <meta name="theme-color" content="#88eeff"/>
   <style>
-    :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#88eeff; }
+    :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#88eeff;
+            --ok:#34d399; --warn:#f59e0b; --strong:#10b981; --extra:#a78bfa; --normal:#64748b; }
     html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    header{padding:16px 16px 8px;text-align:center;position:relative}
+    header{padding:16px 16px 8px;text-align:center}
     h1{margin:0;font-size:22px;letter-spacing:.5px}
     .subtitle{color:#93a0c7;font-size:13px;margin-top:4px}
     .statusbar{font-size:12px;color:#cde3ff;background:#0e1933;border-top:1px solid #2b3158;border-bottom:1px solid #2b3158;padding:8px 16px;text-align:center}
@@ -20,20 +21,34 @@
     .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
     input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:8px 10px;width:100%}
     .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:640px){
+      .row3{grid-template-columns:1fr}
+      .row2{grid-template-columns:1fr}
+    }
     button{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+    button.ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158}
     button:disabled{opacity:.6;cursor:not-allowed}
     .pill{display:inline-block;padding:6px 10px;border:1px solid #2b3158;border-radius:999px;color:#e8ecff;font-size:12px;background:#1a2044}
+    .effect{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;font-weight:700}
+    .effect.normal{background:#0f172a;color:#cbd5e1;border:1px solid #334155}
+    .effect.possible{background:#1f2937;color:#fde68a;border:1px solid #6b7280}
+    .effect.strong{background:#042f2e;color:#a7f3d0;border:1px solid #065f46}
+    .effect.extra{background:#1e1b4b;color:#ddd6fe;border:1px solid #4c1d95}
     canvas{width:100%;height:260px;background:#0b0d1a;border:1px solid #22264a;border-radius:10px;display:block}
     .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
     .stat{background:#0e1020;border:1px solid #22264a;border-radius:10px;padding:10px}
     .stat b{display:block;font-size:20px;margin-top:6px;color:#bfe6ff}
-    table{width:100%;border-collapse:collapse}th,td{padding:6px 8px;border-bottom:1px solid #262a43;text-align:left}
-    .ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158;padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer}
+    .tablewrap{max-width:100%;overflow:auto;border:1px solid #262a43;border-radius:12px}
+    table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:8px 10px;border-bottom:1px solid #262a43;text-align:left}
     .hidden{display:none!important}
     .error{color:#ffbaba;background:#3b0f0f;border:1px solid #6b1d1d;padding:8px;border-radius:10px;margin-top:10px}
+    .topcard{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .flexgap{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   </style>
 
-  <!-- Early project resolver and status priming -->
+  <!-- Early project resolver -->
   <script>
     (function(){
       try {
@@ -42,9 +57,9 @@
         const project = urlProj || (localStorage.getItem('project_code')||'').trim() || 'clares-data';
         localStorage.setItem('project_code', project);
         localStorage.setItem('project_locked','1');
-        window.__GCLAB__ = { version:'v10.1.7', project, lastError:'', rows:undefined };
+        window.__GCLAB__ = { version:'v10.2.1', project, lastError:'', rows:undefined };
       } catch(e){
-        window.__GCLAB__ = { version:'v10.1.7', project:'clares-data', lastError:'(init) '+(e.message||e), rows:undefined };
+        window.__GCLAB__ = { version:'v10.2.1', project:'clares-data', lastError:'(init) '+(e.message||e), rows:undefined };
       }
     })();
   </script>
@@ -55,16 +70,15 @@
   <div class="subtitle">Testing how our consciousness affects a quantum random number generator</div>
 </header>
 
-<div class="statusbar" id="statusbar">v10.1.7 • Project: loading… • Rows: — • Last error: —</div>
+<div class="statusbar" id="statusbar">v10.2.1 • Project: loading… • Rows: — • Last error: —</div>
 
 <div class="wrap">
-  <div class="card" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+  <div class="card topcard">
+    <div class="flexgap">
       <span class="pill" id="projectBadge">Project: —</span>
       <span class="pill" id="clock">Idle</span>
-      <span class="pill" id="elapsed">Elapsed: 00:00</span>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <div class="controls">
       <input id="projectInput" placeholder="Project code" style="width:200px"/>
       <button id="applyProject" class="ghost">Apply</button>
     </div>
@@ -85,15 +99,18 @@
         <div><div class="label">Alpha</div>
           <select id="alpha"><option value="0.05" selected>0.05 (95%)</option><option value="0.01">0.01 (99%)</option></select>
         </div>
-        <div style="display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap">
+        <div class="controls" style="align-items:flex-end">
           <button id="startBtn">Start</button>
           <button id="stopBtn" disabled>End</button>
+          <span class="pill" id="elapsed">Elapsed: 00:00</span>
         </div>
+      </div>
+      <div style="margin-top:10px">
+        <span id="liveEffect" class="effect normal">No unusual pattern detected — randomness looks normal.</span>
       </div>
     </div>
     <div class="card">
       <div class="label">Live deviation</div>
-      <div class="small muted" id="sourceNote">Active source: —</div>
       <canvas id="plot" width="800" height="260"></canvas>
       <div class="stats">
         <div class="stat"><span class="small muted">Overall Drift</span><b id="cumZ">—</b></div>
@@ -103,6 +120,10 @@
     </div>
   </div>
 
+  <div class="card" id="finalCard" style="display:none">
+    <div id="finalEffect" class="effect normal">Session complete — randomness looked normal overall.</div>
+  </div>
+
   <div class="card">
     <div class="label">Past sessions (shared)</div>
     <div style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap">
@@ -110,20 +131,28 @@
       <button id="exportPdf">Export PDF</button>
       <span class="pill">Combined Stouffer Z (last 30): <b id="comboZ">—</b></span>
     </div>
-    <div id="table" class="small"></div>
+    <div class="tablewrap">
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>#</th><th>Tester</th><th>Title</th><th>Start</th><th>Min</th><th>Tests</th><th>Bits/Trial</th><th>Alpha</th><th>Z</th><th>p</th><th>Effect</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
 <script>
-// Show early project in status and pill
+// Prime status
 (function primeStatus(){
-  const S = window.__GCLAB__ || {version:'v10.1.7', project:'clares-data'};
+  const S = window.__GCLAB__ || {version:'v10.2.1', project:'clares-data'};
   const status = document.getElementById('statusbar');
   status.textContent = `${S.version} • Project: ${S.project} • Rows: — • Last error: ${S.lastError||'—'}`;
-  const pill = document.getElementById('projectBadge');
-  pill.textContent = 'Project: ' + S.project + ' (locked)';
-  const input = document.getElementById('projectInput');
-  input.value = S.project;
+  document.getElementById('projectBadge').textContent = 'Project: ' + S.project + ' (locked)';
+  document.getElementById('projectInput').value = S.project;
+  document.getElementById('clock').textContent = 'Idle';
 })();
 
 // Remove service worker/caches
@@ -141,44 +170,48 @@ const SUPABASE_URL = "https://wyecvewtlgyzizupocfh.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZWN2ZXd0bGd5eml6dXBvY2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTYzODcsImV4cCI6MjA3MDY5MjM4N30.nfcrwzm1t-d5l3DiME5RFahC_LVxStn0IekaPjMKMpg";
 const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// Status helper (fixed JS syntax)
+// Status helper
 function setStatus(rows, err){
-  const S = window.__GCLAB__ || { version:'v10.1.7', project:'clares-data' };
+  const S = window.__GCLAB__ || { version:'v10.2.1', project:'clares-data' };
   const rowsText = (rows === undefined || rows === null) ? '—' : rows;
   const s = document.getElementById('statusbar');
   s.textContent = `${S.version} • Project: ${S.project} • Rows: ${rowsText} • Last error: ${err || '—'}`;
   if (err){ const e=document.getElementById('errPanel'); e.textContent=err; e.classList.remove('hidden'); }
 }
 function getProject(){ return (window.__GCLAB__ && window.__GCLAB__.project) || 'clares-data'; }
+
+// Stats helpers
 function erf(x){const s=x>=0?1:-1; x=Math.abs(x); const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911; const t=1/(1+p*x); const y=1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x); return s*y;}
 function cdfNormal(z){return .5*(1+erf(z/Math.SQRT2));}
 function twoSidedP(z){return 2*(1-cdfNormal(Math.abs(z)));}
 function stoufferZ(zs){if(!zs.length) return 0; const s=zs.reduce((a,b)=>a+b,0); return s/Math.sqrt(zs.length);}
 
-async function dbFetch(project){
-  try {
-    const { data, error } = await SB.from('sessions').select('*').eq('project', project).order('start', { ascending:false }).limit(500);
-    if (error) throw error;
-    setStatus((data||[]).length, '');
-    return data || [];
-  } catch (e) {
-    console.error('Supabase read failed:', e);
-    setStatus(undefined, e.message || String(e));
-    const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]');
-    return cache.filter(r=>r.project===project);
-  }
+// Effect labelling
+function effectLabel(p, alpha){
+  const a = parseFloat(alpha||'0.05');
+  if (!isFinite(p)) return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
+  if (p <= 0.2*a || p <= 0.001) return {cls:'extra', text:'Extraordinary effect — high coherence observed!', tier:'Extraordinary'};
+  if (p <= 0.5*a || p <= 0.01) return {cls:'strong', text:'Strong effect detected — group focus seems to influence the RNG.', tier:'Strong'};
+  if (p <= a) return {cls:'possible', text:'Small shift detected — possible group influence.', tier:'Possible'};
+  return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
 }
-async function dbInsert(project, rec){
-  try {
-    const { error } = await SB.from('sessions').insert(rec);
-    if (error) throw error;
-  } catch (e) {
-    console.error('Supabase write failed:', e);
-    const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]'); s.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(s));
-    setStatus(undefined, e.message || String(e));
-  }
+function setLiveEffect(p, alpha){
+  const info = effectLabel(p,alpha);
+  const el=document.getElementById('liveEffect');
+  el.className='effect '+info.cls;
+  el.textContent=info.text;
+  return info.tier;
+}
+function setFinalEffect(p, alpha){
+  const info=effectLabel(p,alpha);
+  const el=document.getElementById('finalEffect');
+  el.className='effect '+info.cls;
+  el.textContent='Session complete — '+info.text.replace(/^No unusual pattern detected — /,'').replace(/ — .*$/,'').replace(/^/,'').trim() || info.text;
+  document.getElementById('finalCard').style.display='block';
+  return info.tier;
 }
 
+// Plot
 const canvas=document.getElementById('plot'); const ctx=canvas.getContext('2d');
 function clearPlot(){ctx.fillStyle='#0b0d1a';ctx.fillRect(0,0,canvas.width,canvas.height);}
 function drawAxes(){ctx.strokeStyle='#22264a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(40,10);ctx.lineTo(40,canvas.height-20);ctx.lineTo(canvas.width-10,canvas.height-20);ctx.stroke();ctx.fillStyle='#93a0c7';ctx.font='12px system-ui';ctx.fillText('Z',10,16);ctx.fillText('Trials →',canvas.width-100,canvas.height-6);}
@@ -194,15 +227,54 @@ function plotSeries(zs,alpha){
   ctx.beginPath();ctx.moveTo(x(0),y(cums[0]||0)); for(let i=1;i<n;i++){ctx.lineTo(x(i),y(cums[i]));} ctx.stroke();
 }
 
+// DB
+async function dbFetch(project){
+  try {
+    const { data, error } = await SB.from('sessions').select('*').eq('project', project).order('start', { ascending:false }).limit(500);
+    if (error) throw error;
+    setStatus((data||[]).length, '');
+    return data || [];
+  } catch (e) {
+    setStatus(undefined, e.message || String(e));
+    const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]');
+    return cache.filter(r=>r.project===project);
+  }
+}
+async function dbInsert(project, rec){
+  try {
+    const { error } = await SB.from('sessions').insert(rec);
+    if (error) throw error;
+  } catch (e) {
+    // Fallback if effect_label column doesn't exist yet: try without it
+    if (String(e.message||'').toLowerCase().includes('column') && String(e.message||'').toLowerCase().includes('effect_label')) {
+      const rec2 = Object.assign({}, rec);
+      delete rec2.effect_label;
+      try { await SB.from('sessions').insert(rec2); }
+      catch (e2) { console.error('Insert fallback also failed', e2); }
+      setStatus(undefined, 'Note: effect_label column missing; added row without it.');
+    } else {
+      const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]'); s.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(s));
+      setStatus(undefined, e.message || String(e));
+    }
+  }
+}
+
+// Table
 function renderTable(rows){
-  const rowsHtml=rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td><td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td><td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td><td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td><td>${r.source}</td></tr>`).join('');
-  document.getElementById('table').innerHTML=`<table><thead><tr><th>#</th><th>Tester</th><th>Title</th><th>Start</th><th>Min</th><th>Tests</th><th>Bits/Trial</th><th>Alpha</th><th>Z</th><th>p</th><th>Source</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
+  const body=document.getElementById('resultsBody');
+  body.innerHTML = rows.map((r,i)=>`<tr>
+    <td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td>
+    <td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td>
+    <td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td>
+    <td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td><td>${r.effect_label||''}</td>
+  </tr>`).join('');
   const zs=rows.slice(0,30).map(r=>+r.z); document.getElementById('comboZ').textContent = (zs.length? (stoufferZ(zs).toFixed(3)) : '—');
 }
 
 // Exports
 document.getElementById('exportCsv').addEventListener('click', async ()=>{
-  const project=getProject(); const s=await dbFetch(project); const header=['project','tester','title','start','duration_min','trials','trial_bits','alpha','z','p','source'];
+  const project=getProject(); const s=await dbFetch(project);
+  const header=['project','tester','title','start','duration_min','trials','trial_bits','alpha','z','p','effect_label'];
   const lines=[header.join(',')].concat(s.map(r=> header.map(k=> r[k]).join(',')));
   const blob=new Blob([lines.join('\n')],{type:'text/csv'}); const url=URL.createObjectURL(blob);
   const a=document.createElement('a'); a.href=url; a.download=`gclab_sessions_${project}.csv`; a.click(); URL.revokeObjectURL(url);
@@ -212,8 +284,8 @@ document.getElementById('exportPdf').addEventListener('click', async ()=>{
   const { jsPDF } = window.jspdf; const doc=new jsPDF({unit:'pt',format:'a4'});
   doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text('Group Coherence — All Sessions', 40, 40);
   doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text('Project: ' + project, 40, 58);
-  const head=[['#','Tester','Title','Start','Min','Tests','Bits','Alpha','Z','p','Source']];
-  const body = s.map((r,i)=>[i+1, r.tester||'', r.title||'', new Date(r.start).toLocaleString(), r.duration_min, r.trials, r.trial_bits, r.alpha, (+r.z).toFixed(3), (+r.p).toExponential(2), r.source]);
+  const head=[['#','Tester','Title','Start','Min','Tests','Bits','Alpha','Z','p','Effect']];
+  const body = s.map((r,i)=>[i+1, r.tester||'', r.title||'', new Date(r.start).toLocaleString(), r.duration_min, r.trials, r.trial_bits, r.alpha, (+r.z).toFixed(3), (+r.p).toExponential(2), r.effect_label||'']);
   doc.autoTable({ head, body, startY: 72, styles:{fontSize:9, cellPadding:3}, headStyles:{fillColor:[14,165,233]} });
   doc.save(`group_coherence_sessions_${project}.pdf`);
 });
@@ -224,7 +296,6 @@ async function qrng(len){
   if(!r.ok) throw new Error('qrng failed');
   const j = await r.json();
   const arr = j.data || [];
-  const note=document.getElementById('sourceNote'); if(note) note.textContent = 'Active source: ' + (j.source || 'Unknown');
   return new Uint16Array(arr.map(x=>x&0xFFFF));
 }
 
@@ -261,18 +332,21 @@ async function runSession(){
       const n=plan.trial_bits, mu=n/2, sigma=Math.sqrt(n/4); const z=(sum-mu)/sigma;
       session.zs.push(z);
       document.getElementById('trials').textContent=session.zs.length;
-      plotSeries(session.zs, plan.alpha);
       const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(session.zs.length);
+      const p = twoSidedP(cumZ);
       document.getElementById('cumZ').textContent=cumZ.toFixed(3);
-      document.getElementById('pval').textContent=twoSidedP(cumZ).toExponential(2);
+      document.getElementById('pval').textContent=p.toExponential(2);
+      setLiveEffect(p, plan.alpha);
+      plotSeries(session.zs, plan.alpha);
       await new Promise(r=> setTimeout(r,1000));
     }
     const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(Math.max(1,session.zs.length));
-    const rec={ project, tester:plan.tester, title:plan.title, start:plan.start, duration_min:plan.duration_min, trials:session.zs.length, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:twoSidedP(cumZ), source:'QRNG proxy' };
+    const p = twoSidedP(cumZ);
+    const tier = setFinalEffect(p, plan.alpha);
+    const rec={ project, tester:plan.tester, title:plan.title, start:plan.start, duration_min:plan.duration_min, trials:session.zs.length, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:p, effect_label:tier };
     await dbInsert(project, rec);
     const rows=await dbFetch(project); renderTable(rows);
   }catch(e){
-    console.error('Session error:', e);
     setStatus(undefined, e.message || String(e));
   }finally{
     stopElapsed(); lockUI(false); session=null;
