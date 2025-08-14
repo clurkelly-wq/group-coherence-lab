@@ -8,59 +8,66 @@
   <meta name="theme-color" content="#88eeff"/>
   <style>
     :root { --bg:#0f1120; --panel:#16192b; --ink:#e8ecff; --muted:#93a0c7; --accent:#38bdf8;
-            --amber:#f59e0b; --teal:#10b981; --violet:#8b5cf6; --slate:#64748b; }
+            --ok:#34d399; --warn:#f59e0b; --strong:#10b981; --extra:#a78bfa; --normal:#64748b; }
     html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
     header{padding:16px 16px 8px;text-align:center}
-    h1{margin:0;font-size:22px;letter-spacing:.3px}
-    .subtitle{color:#93a0c7;font-size:13px;margin-top:4px;text-wrap:balance}
+    h1{margin:0;font-size:22px;letter-spacing:.5px}
+    .subtitle{color:#93a0c7;font-size:13px;margin-top:4px}
     .wrap{max-width:980px;margin:0 auto;padding:12px 16px 40px}
     .grid{display:grid;grid-template-columns:1fr;gap:16px}
     @media(min-width:1000px){.grid{grid-template-columns:1.2fr 1fr}}
     .card{background:var(--panel);border:1px solid #262a43;border-radius:14px;padding:16px}
     .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
-    input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:10px 12px;width:100%}
-    .row3{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:12px}
-    @media(max-width:680px){ .row3{grid-template-columns:1fr} }
-    button{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
+    input,select{background:#0e1020;border:1px solid #2b3158;color:var(--ink);border-radius:10px;padding:8px 10px;width:100%}
+    .row3{display:grid;grid-template-columns:repeat(3, minmax(0, 240px));gap:14px;align-items:start}
+    @media(max-width:900px){ .row3{grid-template-columns:1fr; } }
+    button.btn{background:linear-gradient(180deg,#38bdf8,#0ea5e9);border:none;color:#00111a;border-radius:12px;padding:14px 18px;font-weight:800;cursor:pointer}
     button.ghost{background:#1f2547;color:#e8ecff;border:1px solid #2b3158}
-    button.red{background:linear-gradient(180deg,#ef4444,#b91c1c);color:#fff}
-    .btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-start}
-    .helpwrap{display:flex;justify-content:flex-end;margin-top:6px;margin-bottom:4px}
-    .helpwrap button{background:linear-gradient(180deg,#38bdf8,#0ea5e9); padding:10px 14px; border-radius:12px}
-    .pill{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border:1px solid #2b3158;border-radius:999px;color:#e8ecff;font-size:12px;background:#1a2044}
-    .pill i{display:inline-block;width:12px;height:12px;border-radius:999px;background:#9ae6ff}
-    .effect{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;font-weight:700;margin-top:10px}
-    .effect.normal{background:#0f172a;color:#cbd5e1;border:1px solid #334155}
-    .effect.possible{background:#1f2937;color:#fde68a;border:1px solid #6b7280}
-    .effect.strong{background:#042f2e;color:#a7f3d0;border:1px solid #065f46}
-    .effect.extra{background:#1e1b4b;color:#ddd6fe;border:1px solid #4c1d95}
-    canvas{width:100%;height:280px;background:#0b0d1a;border:1px solid #22264a;border-radius:10px;display:block}
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
-    .stat{background:#0e1020;border:1px solid #22264a;border-radius:10px;padding:10px}
-    .stat b{display:block;font-size:20px;margin-top:6px;color:#bfe6ff}
-    .tablewrap{max-width:100%;overflow:auto;border:1px solid #262a43;border-radius:12px}
-    table{width:100%;border-collapse:collapse;min-width:820px}th,td{padding:8px 10px;border-bottom:1px solid #262a43;text-align:left}
+    button.danger{background:linear-gradient(180deg,#ef4444,#dc2626);color:#fff;border:none}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .pill{display:inline-block;padding:12px 16px;border:1px solid #2b3158;border-radius:999px;color:#e8ecff;font-size:16px;background:#1a2044}
+    .pill.small{padding:6px 10px;font-size:12px}
+    .badges{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
     .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px;white-space:nowrap}
     .badge.normal{background:#111827;color:#cbd5e1;border:1px solid #374151}
     .badge.possible{background:#1f2937;color:#fde68a;border:1px solid #6b7280}
     .badge.strong{background:#064e3b;color:#a7f3d0;border:1px solid #065f46}
     .badge.extra{background:#312e81;color:#ddd6fe;border:1px solid #4c1d95}
+    .effect{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;font-weight:700}
+    .effect.normal{background:#0f172a;color:#cbd5e1;border:1px solid #334155}
+    .effect.possible{background:#1f2937;color:#fde68a;border:1px solid #6b7280}
+    .effect.strong{background:#042f2e;color:#a7f3d0;border:1px solid #065f46}
+    .effect.extra{background:#1e1b4b;color:#ddd6fe;border:1px solid #4c1d95}
+    canvas{width:100%;height:300px;background:#0b0d1a;border:1px solid #22264a;border-radius:10px;display:block}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+    .stat{background:#0e1020;border:1px solid #22264a;border-radius:10px;padding:10px}
+    .stat b{display:block;font-size:20px;margin-top:6px;color:#bfe6ff}
+    .tablewrap{max-width:100%;overflow:auto;border:1px solid #262a43;border-radius:12px}
+    table{width:100%;border-collapse:collapse;min-width:940px}th,td{padding:8px 10px;border-bottom:1px solid #262a43;text-align:left}
+    .hidden{display:none!important}
     .error{color:#ffbaba;background:#3b0f0f;border:1px solid #6b1d1d;padding:8px;border-radius:10px;margin-top:10px}
-    /* Help modal */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,20,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
-    .modal{background:#0f1328;border:1px solid #2b3158;border-radius:16px;max-width:860px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-    .modal header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #24304f}
-    .modal h2{margin:0;font-size:18px}
-    .modal .content{padding:16px}
-    .legend{display:grid;grid-template-columns:1fr;gap:8px;margin:8px 0 16px}
-    .legend .row{display:flex;align-items:center;gap:10px}
-    .legend .swatch{width:16px;height:16px;border-radius:4px;border:1px solid #2b3158}
-    .swatch.grey{background:#111827}
-    .swatch.yellow{background:#1f2937}
-    .swatch.green{background:#064e3b}
-    .swatch.purple{background:#312e81}
-    .muted{color:#93a0c7}
+    .topcard{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .spacer{height:8px}
+    .helpwrap{display:flex;justify-content:flex-end}
+    .helpwrap .btn{margin-top:6px}
+    .pillbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
   </style>
+
+  <script>
+    // Project resolver & version
+    (function(){
+      try {
+        const params = new URLSearchParams(location.search);
+        const urlProj = (params.get('project')||'').trim();
+        const project = urlProj || (localStorage.getItem('project_code')||'').trim() || 'clares-data';
+        localStorage.setItem('project_code', project);
+        window.__GCLAB__ = { version:'v10.6.4', project, lastError:'', rows:undefined };
+      } catch(e){
+        window.__GCLAB__ = { version:'v10.6.4', project:'clares-data', lastError:'(init) '+(e.message||e), rows:undefined };
+      }
+    })();
+  </script>
 </head>
 <body>
 <header>
@@ -69,46 +76,50 @@
 </header>
 
 <div class="wrap">
-  <div class="helpwrap">
-    <button id="helpBtn">What even is this?</button>
+  <div class="topcard">
+    <div class="controls">
+      <button id="startBtn" class="btn">Start</button>
+      <button id="stopBtn" class="btn" disabled>End</button>
+      <button id="markBtn" class="btn" disabled>Mark moment</button>
+    </div>
+    <div class="helpwrap">
+      <button id="helpBtn" class="btn">What even is this?</button>
+    </div>
   </div>
 
-  <div id="errPanel" class="error" style="display:none"></div>
+  <div class="spacer"></div>
+  <div class="pillbar">
+    <span class="pill" id="elapsed">Elapsed: 00:00</span>
+    <span class="pill small hidden" id="offlinePill">Offline mode — logging locally</span>
+    <span class="pill small hidden" id="syncPill">Syncing… ⟳</span>
+  </div>
 
-  <div class="grid">
+  <div id="errPanel" class="error hidden"></div>
+
+  <div class="grid" style="margin-top:12px">
     <div class="card">
       <div class="label">Session setup</div>
-      <div class="row3" style="margin-top:10px">
-        <div><div class="label">Tester name</div><input id="testerName" placeholder="e.g., Clare" maxlength="60"></div>
-        <div><div class="label">Session title</div><input id="sessionTitle" placeholder="e.g., Sunday Circle" maxlength="80"></div>
-        <div><div class="label">Duration (minutes)</div><input id="duration" type="number" min="1" max="60" value="10"></div>
+      <div class="row3" style="margin-top:8px">
+        <div><div class="label">Tester name</div><input id="testerName" placeholder="e.g., Clare"/></div>
+        <div><div class="label">Session title</div><input id="sessionTitle" placeholder="e.g., Sunday Circle"/></div>
+        <div><div class="label">Duration (minutes)</div><input id="duration" type="number" min="1" max="120" value="10"/></div>
       </div>
-      <div class="row3" style="margin-top:10px">
-        <div><div class="label">Trial size (bits)</div><input id="trialBits" type="number" min="50" max="2000" value="200"></div>
+      <div class="row3" style="margin-top:8px">
+        <div><div class="label">Trial size (bits)</div><input id="trialBits" type="number" min="50" max="4000" value="200"/></div>
         <div><div class="label">Alpha</div>
           <select id="alpha"><option value="0.05" selected>0.05 (95%)</option><option value="0.01">0.01 (99%)</option></select>
         </div>
-        <div class="btnrow" style="align-items:flex-end">
-          <button id="startBtn">Start</button>
-          <button id="stopBtn" disabled>End</button>
-          <button id="markBtn" class="ghost" disabled>Mark moment</button>
-        </div>
       </div>
-      <div class="btnrow" style="margin-top:8px">
-        <span class="pill" id="elapsed">Elapsed: 00:00</span>
-        <span class="pill" id="offlinePill" style="display:none"><i></i> Offline mode — logging locally</span>
-        <span class="pill" id="syncPill" style="display:none"><i></i> Syncing…</span>
-      </div>
-      <div style="margin-top:8px">
+      <div style="margin-top:10px">
         <span id="liveEffect" class="effect normal">No unusual pattern detected — randomness looks normal.</span>
       </div>
     </div>
     <div class="card">
       <div class="label">Live deviation</div>
-      <canvas id="plot" width="800" height="280"></canvas>
+      <canvas id="plot" width="900" height="300"></canvas>
       <div class="stats">
-        <div class="stat"><span class="small muted">Overall Drift</span><b id="cumZ">—</b></div>
-        <div class="stat"><span class="small muted">How Unusual?</span><b id="pval">—</b></div>
+        <div class="stat"><span class="small muted">Overall Drift (Z)</span><b id="cumZ">—</b></div>
+        <div class="stat"><span class="small muted">How Unusual? (p)</span><b id="pval">—</b></div>
         <div class="stat"><span class="small muted">Number of Tests</span><b id="trials">0</b></div>
       </div>
     </div>
@@ -121,15 +132,15 @@
   <div class="card">
     <div class="label">Past sessions (shared)</div>
     <div style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap">
-      <button id="exportCsv">Export CSV</button>
-      <button id="exportPdf">Export PDF</button>
-      <button id="deleteAll" class="red">Delete All Data</button>
+      <button id="exportCsv" class="btn">Export CSV</button>
+      <button id="exportPdf" class="btn">Export PDF</button>
+      <button id="deleteAll" class="danger">Delete All Data</button>
     </div>
     <div class="tablewrap">
       <table id="resultsTable">
         <thead>
           <tr>
-            <th>#</th><th>Tester</th><th>Title</th><th>Start</th><th>Min</th><th>Tests</th><th>Bits/Trial</th><th>Alpha</th><th>Z</th><th>p</th><th>Effect</th>
+            <th>#</th><th>Tester</th><th>Title</th><th>Start</th><th>Min</th><th>Tests</th><th>Bits/Trial</th><th>Alpha</th><th>Z</th><th>p</th><th>Effect</th><th>Actions</th>
           </tr>
         </thead>
         <tbody id="resultsBody"></tbody>
@@ -139,23 +150,23 @@
 </div>
 
 <!-- Help Modal -->
-<div class="overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+<div class="overlay hidden" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
   <div class="modal">
     <header>
       <h2 id="helpTitle">Help & How it Works</h2>
       <button id="closeHelp" class="ghost">Close</button>
     </header>
     <div class="content">
-      <p><b>Group Coherence Lab</b> explores whether shared intention affects a quantum random number generator (QRNG). You set a duration and focus together; the app measures drift from randomness.</p>
+      <p><b>Quantum Consciousness Coherence App</b> explores whether shared intention affects a quantum random number generator (QRNG). You set a duration and focus together; the app measures drift from randomness.</p>
       <p class="muted">Two knobs you can adjust:</p>
       <ul>
-        <li><b>Alpha</b>: how strict the test is. 0.05 is standard (easier to see effects); 0.01 is stricter (fewer “false alarms”).</li>
+        <li><b>Alpha</b>: how strict the test is. 0.05 is standard (easier to see effects); 0.01 is stricter (harder to trigger but fewer “false alarms”).</li>
         <li><b>Trial size</b>: how many bits per test. Small = faster, but noisier. Large = slower, but steadier.</li>
       </ul>
       <hr style="border-color:#24304f;border-style:solid;border-width:1px 0 0;margin:12px 0"/>
       <p><b>Color legend (based on cumulative z‑score)</b></p>
       <div class="legend">
-        <div class="row"><span class="swatch grey"></span> <b>Grey — No unusual pattern</b> <span class="muted">| |z| &lt; 1.96</span></div>
+        <div class="row"><span class="swatch grey"></span> <b>Grey — Normal</b> <span class="muted">| |z| &lt; 1.96</span></div>
         <div class="row"><span class="swatch yellow"></span> <b>Yellow — Possible group influence</b> <span class="muted">| 1.96 ≤ |z| &lt; 2.58</span></div>
         <div class="row"><span class="swatch green"></span> <b>Green — Strong effect</b> <span class="muted">| 2.58 ≤ |z| &lt; 3.29</span></div>
         <div class="row"><span class="swatch purple"></span> <b>Purple — Extraordinary coherence</b> <span class="muted">| |z| ≥ 3.29</span></div>
@@ -163,84 +174,60 @@
       <p class="muted">Tip: Larger groups or deeper coherence often show smoother, stronger drift.</p>
       <hr style="border-color:#24304f;border-style:solid;border-width:1px 0 0;margin:12px 0"/>
       <p><b>Watch: Quick intro</b></p>
-      <div style="position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;border:1px solid #24304f;background:#000">
+      <div class="ytwrap">
         <iframe src="https://www.youtube.com/embed/Sp7-6850Mls" title="YouTube video player" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen style="position:absolute;inset:0;width:100%;height:100%"></iframe>
+                allowfullscreen></iframe>
       </div>
     </div>
   </div>
 </div>
 
+<script>
+// Modal styles
+</script>
+<style>
+  /* Help modal extra CSS */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,20,.6);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+  .modal{background:#0f1328;border:1px solid #2b3158;border-radius:16px;max-width:860px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .modal header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #24304f}
+  .modal h2{margin:0;font-size:18px}
+  .modal .content{padding:16px}
+  .legend{display:grid;grid-template-columns:1fr;gap:8px;margin:8px 0 16px}
+  .legend .row{display:flex;align-items:center;gap:10px}
+  .legend .swatch{width:16px;height:16px;border-radius:4px;border:1px solid #2b3158}
+  .swatch.grey{background:#111827}
+  .swatch.yellow{background:#1f2937}
+  .swatch.green{background:#064e3b}
+  .swatch.purple{background:#312e81}
+  .ytwrap{position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;border:1px solid #24304f;background:#000}
+  .ytwrap iframe{position:absolute;inset:0;width:100%;height:100%}
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <script>
-// Config
+// Supabase
 const SUPABASE_URL = "https://wyecvewtlgyzizupocfh.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZWN2ZXd0bGd5eml6dXBvY2ZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxMTYzODcsImV4cCI6MjA3MDY5MjM4N30.nfcrwzm1t-d5l3DiME5RFahC_LVxStn0IekaPjMKMpg";
 const SB = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-const params = new URLSearchParams(location.search);
-const PROJECT = (params.get('project')||localStorage.getItem('project_code')||'clares-data').trim();
-localStorage.setItem('project_code', PROJECT);
 
-// Help modal
-const helpBtn = document.getElementById('helpBtn');
-const helpOverlay = document.getElementById('helpOverlay');
-const closeHelp = document.getElementById('closeHelp');
-helpBtn.addEventListener('click', ()=> helpOverlay.style.display='flex');
-closeHelp.addEventListener('click', ()=> helpOverlay.style.display='none');
-helpOverlay.addEventListener('click', (e)=>{ if(e.target===helpOverlay) helpOverlay.style.display='none'; });
-
-// UI elems
-const errPanel = document.getElementById('errPanel');
-const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), markBtn=document.getElementById('markBtn');
-const elapsedEl=document.getElementById('elapsed');
-const offlineP=document.getElementById('offlinePill'), syncP=document.getElementById('syncPill');
-const nameEl=document.getElementById('testerName'), titleEl=document.getElementById('sessionTitle'), durEl=document.getElementById('duration'), trialBitsEl=document.getElementById('trialBits'), alphaEl=document.getElementById('alpha');
-const liveEl=document.getElementById('liveEffect');
-
-function showErr(msg){ errPanel.style.display='block'; errPanel.textContent = msg; }
-function clearErr(){ errPanel.style.display='none'; errPanel.textContent=''; }
-
-// Offline/online pills
-function updateOfflinePill(){
-  if (navigator.onLine){ offlineP.style.display='none'; }
-  else { offlineP.style.display='inline-flex'; }
+// Helpers
+function setError(msg){
+  const e=document.getElementById('errPanel');
+  if(msg){ e.textContent=msg; e.classList.remove('hidden'); }
+  else { e.textContent=''; e.classList.add('hidden'); }
 }
-window.addEventListener('online', ()=>{ updateOfflinePill(); });
-window.addEventListener('offline', ()=>{ updateOfflinePill(); });
-updateOfflinePill();
+function getProject(){ return (window.__GCLAB__ && window.__GCLAB__.project) || 'clares-data'; }
 
-// Sync pill helpers
-let syncing=false;
-function setSyncing(on){ syncing=!!on; syncP.style.display = on ? 'inline-flex' : 'none'; }
-
-// RNG: QRNG with fallback to local crypto, and auto-clear offline banner on success
-async function qrng(len){
-  try{
-    const r = await fetch(`/.netlify/functions/qrng?len=${len}`, { mode:'cors' });
-    if(!r.ok) throw new Error('qrng failed');
-    const j = await r.json();
-    const arr = j.data || [];
-    // If we got data via network, ensure offline pill is hidden (net is back)
-    if (arr && arr.length) offlineP.style.display='none';
-    return new Uint16Array(arr.map(x=>x&0xFFFF));
-  }catch(e){
-    // fallback to local secure RNG
-    const u16 = new Uint16Array(len);
-    crypto.getRandomValues(u16);
-    return u16;
-  }
-}
-
-// Stats
+// Stats helpers
 function erf(x){const s=x>=0?1:-1; x=Math.abs(x); const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911; const t=1/(1+p*x); const y=1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x); return s*y;}
 function cdfNormal(z){return .5*(1+erf(z/Math.SQRT2));}
 function twoSidedP(z){return 2*(1-cdfNormal(Math.abs(z)));}
 function stoufferZ(zs){if(!zs.length) return 0; const s=zs.reduce((a,b)=>a+b,0); return s/Math.sqrt(zs.length);}
 
-// Effect labels
+// Effect labelling
 function effectLabel(p, alpha){
   const a = parseFloat(alpha||'0.05');
   if (!isFinite(p)) return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
@@ -249,175 +236,263 @@ function effectLabel(p, alpha){
   if (p <= a) return {cls:'possible', text:'Small shift detected — possible group influence.', tier:'Possible'};
   return {cls:'normal', text:'No unusual pattern detected — randomness looks normal.', tier:'Normal'};
 }
-function setLiveEffect(p, alpha){
-  const info = effectLabel(p,alpha);
-  liveEl.className='effect '+info.cls;
-  liveEl.textContent=info.text;
-  return info.tier;
-}
-function setFinalEffect(p, alpha){
-  const info=effectLabel(p,alpha);
-  const el=document.getElementById('finalEffect');
-  el.className='effect '+info.cls;
-  el.textContent='Session complete — '+info.text.replace(/^No unusual pattern detected — /,'').replace(/ — .*$/,'').trim() || info.text;
-  document.getElementById('finalCard').style.display='block';
-  return info.tier;
+function badgeHtml(tier){
+  const cls = (tier||'Normal').toLowerCase();
+  return `<span class="badge ${cls}">${tier}</span>`;
 }
 
 // Plot
 const canvas=document.getElementById('plot'); const ctx=canvas.getContext('2d');
 function clearPlot(){ctx.fillStyle='#0b0d1a';ctx.fillRect(0,0,canvas.width,canvas.height);}
-function drawAxes(){ctx.strokeStyle='#22264a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(40,10);ctx.lineTo(40,canvas.height-20);ctx.lineTo(canvas.width-10,canvas.height-20);ctx.stroke();ctx.fillStyle='#93a0c7';ctx.font='12px system-ui';ctx.fillText('Z',10,16);ctx.fillText('Trials →',canvas.width-100,canvas.height-6);}
-function yMapFactory(alpha, zs){
-  const zStar = (alpha==='0.01')?2.576:1.96;
-  // Compute cums for dynamic range
-  let cums=[], s=0; for(let i=0;i<zs.length;i++){ s+=zs[i]; cums.push(s/Math.sqrt(i+1)); }
-  const ymax = Math.max(zStar*1.3, Math.max(0, ...cums.map(v=>Math.abs(v))) + 0.5);
-  const w=canvas.width-50, h=canvas.height-40, x0=40, y0=canvas.height-20;
-  const up=0.65, down=0.35; // more visual space below zero
-  const zeroY = y0 - h*up;
-  function x(i,n){ return x0 + (w*(i/Math.max(1,(n-1)))) }
-  function y(v){
-    if (v>=0) return zeroY - (v/ymax)*(h*up);
-    return zeroY - (v/ymax)*(h*down);
-  }
-  return {x,y,ymax,zStar,x0,y0,w,h,zeroY,up,down};
-}
-function drawBands(map){
-  const {y, x0, w, h} = map;
-  // Thresholds
-  const t = [1.96, 2.58, 3.29];
-  // Colors with opacity
-  function fillBand(yTop, yBot, color, label){
-    ctx.save();
-    ctx.globalAlpha = 0.12;
-    ctx.fillStyle = color;
-    ctx.fillRect(x0+1, yTop, w-2, Math.max(0,yBot - yTop));
-    ctx.restore();
-    // Label
-    ctx.fillStyle = color;
-    ctx.globalAlpha = 0.9;
-    ctx.font = '12px system-ui';
-    const ty = yTop + 16;
-    ctx.fillText(label, x0 + w - 160, ty);
-    ctx.globalAlpha = 1.0;
-  }
-  // Positive side (top bands)
-  fillBand(y(3.29), y(2.58), '#8b5cf6', 'Extraordinary (|z| ≥ 3.29)');
-  fillBand(y(2.58), y(1.96), '#10b981', 'Strong (2.58 ≤ |z| < 3.29)');
-  fillBand(y(1.96), y(0),    '#f59e0b', 'Possible (1.96 ≤ |z| < 2.58)');
-  // Negative side (bottom bands)
-  fillBand(y(0),     y(-1.96), '#f59e0b', 'Possible');
-  fillBand(y(-1.96), y(-2.58), '#10b981', 'Strong');
-  fillBand(y(-2.58), y(-3.29), '#8b5cf6', 'Extraordinary');
+function drawAxesWithBands(alpha){
+  // Compute band edges in Z
+  const zNorm = 1.96;
+  const zStrong = 2.58;
+  const zExtra = 3.29;
+  // Layout margins
+  const x0=40, yBottom=canvas.height-24, yTop=16;
+  const h = yBottom - yTop;
+  // Set asymmetric scale: give more room below zero by shifting zero up
+  const zMax = 3.8; // top
+  const zMin = -4.5; // bottom (more room below)
+  function yFromZ(z){ return yBottom - ((z - zMin)/(zMax - zMin))*h; }
+  // Background bands (Normal, Possible, Strong, Extraordinary) mirrored
+  ctx.save();
+  // Normal band: -1.96..+1.96
+  ctx.fillStyle='rgba(17,24,39,0.55)'; // grey
+  ctx.fillRect(x0, yFromZ(1.96), canvas.width-x0-10, yFromZ(-1.96)-yFromZ(1.96));
+  // Possible: 1.96..2.58 (top) and -2.58..-1.96 (bottom)
+  ctx.fillStyle='rgba(31,41,55,0.45)'; // yellow-ish dark
+  ctx.fillRect(x0, yFromZ(2.58), canvas.width-x0-10, yFromZ(1.96)-yFromZ(2.58));
+  ctx.fillRect(x0, yFromZ(-1.96), canvas.width-x0-10, yFromZ(-2.58)-yFromZ(-1.96));
+  // Strong: 2.58..3.29
+  ctx.fillStyle='rgba(6,78,59,0.40)'; // green-ish
+  ctx.fillRect(x0, yFromZ(3.29), canvas.width-x0-10, yFromZ(2.58)-yFromZ(3.29));
+  ctx.fillRect(x0, yFromZ(-2.58), canvas.width-x0-10, yFromZ(-3.29)-yFromZ(-2.58));
+  // Extraordinary: >=3.29
+  ctx.fillStyle='rgba(49,46,129,0.35)'; // purple-ish
+  ctx.fillRect(x0, yTop, canvas.width-x0-10, yFromZ(3.29)-yTop);
+  ctx.fillRect(x0, yFromZ(-3.29), canvas.width-x0-10, yBottom - yFromZ(-3.29));
+  // Axes
+  ctx.strokeStyle='#22264a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(x0,yTop);ctx.lineTo(x0,yBottom);ctx.lineTo(canvas.width-10,yBottom);ctx.stroke();
+  // Zero line
+  ctx.strokeStyle='#334155'; ctx.setLineDash([4,4]); ctx.beginPath(); ctx.moveTo(x0, yFromZ(0)); ctx.lineTo(canvas.width-10, yFromZ(0)); ctx.stroke(); ctx.setLineDash([]);
+  // Labels on left
+  ctx.fillStyle='#93a0c7'; ctx.font='12px system-ui';
+  ctx.fillText('Z', 12, yTop+4);
+  ctx.fillText('Trials →', canvas.width-100, yBottom+14);
+  // Band labels
+  ctx.font='11px system-ui';
+  ctx.fillStyle='#cbd5e1'; ctx.fillText('Normal', x0+8, yFromZ(0)-6);
+  ctx.fillStyle='#fde68a'; ctx.fillText('Possible', x0+8, yFromZ(2.2));
+  ctx.fillText('Possible', x0+8, yFromZ(-2.2));
+  ctx.fillStyle='#a7f3d0'; ctx.fillText('Strong', x0+8, yFromZ(2.95));
+  ctx.fillText('Strong', x0+8, yFromZ(-2.95));
+  ctx.fillStyle='#ddd6fe'; ctx.fillText('Extraordinary', x0+8, yFromZ(3.45));
+  ctx.fillText('Extraordinary', x0+8, yFromZ(-3.45));
+  ctx.restore();
+  return { x0, yTop, yBottom, zMin, zMax, yFromZ };
 }
 function plotSeries(zs,alpha){
-  clearPlot(); drawAxes();
-  const map = yMapFactory(alpha, zs);
-  drawBands(map);
+  clearPlot();
+  const axes = drawAxesWithBands(alpha);
+  const { x0, yTop, yBottom, zMin, zMax, yFromZ } = axes;
+  const w=canvas.width-50, h=yBottom - yTop;
   const n=Math.max(1,zs.length); let cums=[],s=0; for(let i=0;i<n;i++){s+=zs[i]; cums.push(s/Math.sqrt(i+1));}
-  // Reference lines at ±z*
-  ctx.strokeStyle='#2b3158';ctx.lineWidth=1.2;
-  ctx.beginPath(); ctx.moveTo(map.x0, map.y(map.zStar)); ctx.lineTo(map.x0+map.w, map.y(map.zStar)); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(map.x0, map.y(-map.zStar)); ctx.lineTo(map.x0+map.w, map.y(-map.zStar)); ctx.stroke();
-  // Series
-  ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#38bdf8'; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.moveTo(map.x(0,n), map.y(cums[0]||0));
-  for(let i=1;i<n;i++){ ctx.lineTo(map.x(i,n), map.y(cums[i])); }
-  ctx.stroke();
+  function x(i){return x0+(w*(i/(n-1||1)));}
+  function y(v){ if(v>zMax) v=zMax; if(v<zMin) v=zMin; return yFromZ(v); }
+  // Draw cumulative line
+  ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#88eeff'; ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x(0),y(cums[0]||0)); for(let i=1;i<n;i++){ctx.lineTo(x(i),y(cums[i]));} ctx.stroke();
 }
 
-// DB helpers
-function setStatusErr(e){ if(e){ showErr(e.message || String(e)); } }
+// Offline indicators
+const offlinePill = document.getElementById('offlinePill');
+const syncPill = document.getElementById('syncPill');
+function setOffline(on){ if(on) offlinePill.classList.remove('hidden'); else offlinePill.classList.add('hidden'); }
+function setSyncing(on){ if(on) syncPill.classList.remove('hidden'); else syncPill.classList.add('hidden'); }
+window.addEventListener('online', ()=> setOffline(false));
+window.addEventListener('offline', ()=> setOffline(true));
+
+// RNG via Netlify Function with offline fallback
+let lastHadOnlineQRNG = false;
+async function qrng(len){
+  try {
+    const r = await fetch(`/.netlify/functions/qrng?len=${len}`, { mode:'cors' });
+    if(!r.ok) throw new Error('qrng failed');
+    const j = await r.json();
+    const arr = j.data || [];
+    lastHadOnlineQRNG = true;
+    setOffline(false); // hide offline if QRNG succeeded
+    return new Uint16Array(arr.map(x=>x&0xFFFF));
+  } catch (e){
+    // Offline fallback
+    const arr = new Uint16Array(len);
+    crypto.getRandomValues(arr);
+    setOffline(true);
+    lastHadOnlineQRNG = false;
+    return arr;
+  }
+}
+
+// Outbox queue for offline inserts/deletes
+function outboxGet(){ return JSON.parse(localStorage.getItem('outbox')||'[]'); }
+function outboxSet(items){ localStorage.setItem('outbox', JSON.stringify(items)); }
+async function flushOutbox(){
+  const items = outboxGet();
+  if(!items.length) return;
+  setSyncing(true);
+  try {
+    while(items.length){
+      const job = items[0];
+      if(job.type==='insert'){
+        const { error } = await SB.from('sessions').insert(job.payload);
+        if(error) throw error;
+      } else if(job.type==='delete'){
+        const { error } = await SB.from('sessions').delete().eq('id', job.payload.id);
+        if(error) throw error;
+      }
+      items.shift();
+      outboxSet(items);
+    }
+  } catch (e){
+    // keep remaining; will retry later
+  } finally {
+    setSyncing(false);
+  }
+}
+window.addEventListener('online', flushOutbox);
+setInterval(flushOutbox, 5000);
+
+// DB
 async function dbFetch(project){
   try {
     const { data, error } = await SB.from('sessions').select('*').eq('project', project).order('start', { ascending:false }).limit(500);
     if (error) throw error;
-    return data||[];
+    return data || [];
   } catch (e) {
-    setStatusErr(e);
+    setError(e.message || String(e));
     const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]');
     return cache.filter(r=>r.project===project);
   }
 }
-async function dbInsert(rec){
-  try { const { error } = await SB.from('sessions').insert(rec); if(error) throw error; }
-  catch(e){
-    // add to local outbox & cache
-    const out = JSON.parse(localStorage.getItem('outbox')||'[]'); out.push(rec); localStorage.setItem('outbox', JSON.stringify(out));
-    const cache = JSON.parse(localStorage.getItem('sessions_cache')||'[]'); cache.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(cache));
-    updateOfflinePill();
-    setStatusErr(e);
-    flushOutboxSoon();
+async function dbInsert(project, rec){
+  try {
+    const { error } = await SB.from('sessions').insert(rec);
+    if (error) throw error;
+  } catch (e) {
+    // cache and queue insert
+    const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]'); s.unshift(rec); localStorage.setItem('sessions_cache', JSON.stringify(s));
+    const box = outboxGet(); box.push({type:'insert', payload:rec}); outboxSet(box);
+    setError(e.message || String(e));
   }
 }
-async function dbDeleteProject(project){
-  try { const { error } = await SB.from('sessions').delete().eq('project', project); if(error) throw error; }
-  catch(e){ setStatusErr(e); }
-}
-
-// Outbox flush
-let flushTimer=null;
-function flushOutboxSoon(){ if(flushTimer) return; flushTimer = setTimeout(flushOutbox, 1500); }
-async function flushOutbox(){
-  clearTimeout(flushTimer); flushTimer=null;
-  const out = JSON.parse(localStorage.getItem('outbox')||'[]');
-  if(!out.length) { setSyncing(false); return; }
-  setSyncing(true);
-  const keep=[];
-  for (const rec of out){
-    try { const { error } = await SB.from('sessions').insert(rec); if(error) throw error; }
-    catch(e){ keep.push(rec); }
+async function dbDeleteById(id, rowObj){
+  try {
+    const { error } = await SB.from('sessions').delete().eq('id', id);
+    if (error) throw error;
+  } catch (e){
+    // queue delete
+    const box = outboxGet(); box.push({type:'delete', payload:{id}}); outboxSet(box);
+    setError(e.message || String(e));
+  } finally {
+    // remove from local cache mirror too
+    const s=JSON.parse(localStorage.getItem('sessions_cache')||'[]');
+    const idx = s.findIndex(r => r.id===id || (rowObj && r.project===rowObj.project && r.start===rowObj.start && r.tester===rowObj.tester && r.title===rowObj.title));
+    if(idx>-1){ s.splice(idx,1); localStorage.setItem('sessions_cache', JSON.stringify(s)); }
   }
-  localStorage.setItem('outbox', JSON.stringify(keep));
-  setSyncing(keep.length>0);
-  if(keep.length>0){ flushOutboxSoon(); } // try again
 }
 
 // Table
-function badgeHtml(tier){ const cls=(tier||'Normal').toLowerCase(); return `<span class="badge ${cls}">${tier}</span>`; }
+const resultsBody = document.getElementById('resultsBody');
 function renderTable(rows){
-  const body=document.getElementById('resultsBody');
-  body.innerHTML = rows.map((r,i)=>{
+  resultsBody.innerHTML = rows.map((r,i)=>{
+    const tier = r.effect_label || '';
+    const id = r.id || '';
+    const delBtn = `<button class="danger" data-id="${id}" data-start="${r.start}">Delete</button>`;
     return `<tr>
       <td>${i+1}</td><td>${r.tester||''}</td><td>${r.title||''}</td>
       <td>${new Date(r.start).toLocaleString()}</td><td>${r.duration_min}</td>
       <td>${r.trials}</td><td>${r.trial_bits}</td><td>${r.alpha}</td>
       <td>${(+r.z).toFixed(3)}</td><td>${(+r.p).toExponential(2)}</td>
-      <td>${r.effect_label?badgeHtml(r.effect_label):''}</td>
+      <td>${tier ? badgeHtml(tier) : ''}</td>
+      <td>${delBtn}</td>
     </tr>`;
   }).join('');
+  // Hook delete buttons
+  for(const btn of resultsBody.querySelectorAll('button.danger')){
+    btn.addEventListener('click', async (ev)=>{
+      const id = ev.currentTarget.getAttribute('data-id');
+      const start = ev.currentTarget.getAttribute('data-start');
+      if(!confirm('Are you sure you want to delete this row?')) return;
+      // find row object for cache removal
+      const project = getProject();
+      const rows = await dbFetch(project);
+      const rowObj = rows.find(r => (r.id && String(r.id)===String(id)) || (r.start===start));
+      if(id){
+        await dbDeleteById(id, rowObj);
+      }else if(rowObj){
+        // if no id (unlikely), try delete by composite key serverside; else rely on cache removal
+        try{ await SB.from('sessions').delete().match({project:project, start:rowObj.start}); }catch(e){ /* ignore */ }
+      }
+      await refreshTable();
+    });
+  }
+  // Update combo
+  const zs=rows.slice(0,30).map(r=>+r.z); // we removed combined badge display earlier
 }
 
 // Exports
 document.getElementById('exportCsv').addEventListener('click', async ()=>{
-  const s=await dbFetch(PROJECT);
-  const header=['project','tester','title','start','duration_min','trials','trial_bits','alpha','z','p','effect_label'];
-  const lines=[header.join(',')].concat(s.map(r=> header.map(k=> r[k]).join(',')));
-  const url=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));
-  const a=document.createElement('a'); a.href=url; a.download=`gclab_sessions_${PROJECT}.csv`; a.click(); URL.revokeObjectURL(url);
+  const project=getProject(); const s=await dbFetch(project);
+  const header=['project','tester','title','start','duration_min','trials','trial_bits','alpha','z','p','effect_label','id'];
+  const lines=[header.join(',')].concat(s.map(r=> header.map(k=> (r[k]!==undefined?r[k]:"")).join(',')));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=`gclab_sessions_${project}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 });
 document.getElementById('exportPdf').addEventListener('click', async ()=>{
-  const s=await dbFetch(PROJECT);
+  const project=getProject(); const s=await dbFetch(project);
   const { jsPDF } = window.jspdf; const doc=new jsPDF({unit:'pt',format:'a4'});
   doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.text('Group Coherence — All Sessions', 40, 40);
-  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text('Project: ' + PROJECT, 40, 58);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text('Project: ' + project, 40, 58);
   const head=[['#','Tester','Title','Start','Min','Tests','Bits','Alpha','Z','p','Effect']];
   const body = s.map((r,i)=>[i+1, r.tester||'', r.title||'', new Date(r.start).toLocaleString(), r.duration_min, r.trials, r.trial_bits, r.alpha, (+r.z).toFixed(3), (+r.p).toExponential(2), r.effect_label||'']);
   doc.autoTable({ head, body, startY: 72, styles:{fontSize:9, cellPadding:3}, headStyles:{fillColor:[14,165,233]} });
-  doc.save(`group_coherence_sessions_${PROJECT}.pdf`);
+  doc.save(`group_coherence_sessions_${project}.pdf`);
 });
 document.getElementById('deleteAll').addEventListener('click', async ()=>{
-  if(!confirm(`Delete ALL data for project “${PROJECT}”? This cannot be undone.`)) return;
-  await dbDeleteProject(PROJECT);
-  const rows=await dbFetch(PROJECT); renderTable(rows);
+  const project=getProject();
+  if(!confirm(`Are you sure you want to delete all data for "${project}"?`)) return;
+  try{ await SB.from('sessions').delete().eq('project', project); }
+  catch(e){
+    // queue delete all? not safe; instead mark cache cleared and show error
+    setError(e.message || String(e));
+  }
+  localStorage.setItem('sessions_cache', JSON.stringify([]));
+  await refreshTable();
 });
 
-// RNG session
+// Help modal wiring
+const helpBtn = document.getElementById('helpBtn');
+const helpOverlay = document.getElementById('helpOverlay');
+const closeHelp = document.getElementById('closeHelp');
+helpBtn.addEventListener('click', ()=>{ helpOverlay.classList.remove('hidden'); });
+closeHelp.addEventListener('click', ()=>{ helpOverlay.classList.add('hidden'); });
+helpOverlay.addEventListener('click', (e)=>{ if(e.target===helpOverlay){ helpOverlay.classList.add('hidden'); } });
+
+// Session
 let session=null, elapsedTimer=null;
-function lockUI(run){ [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn].forEach(el=> el.disabled=run); stopBtn.disabled=!run; markBtn.disabled=!run; }
+const nameEl=document.getElementById('testerName'), titleEl=document.getElementById('sessionTitle'), durEl=document.getElementById('duration'), trialBitsEl=document.getElementById('trialBits'), alphaEl=document.getElementById('alpha');
+const startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn'), markBtn=document.getElementById('markBtn'), elapsedEl=document.getElementById('elapsed');
+
+function lockUI(run){
+  [nameEl,titleEl,durEl,trialBitsEl,alphaEl,startBtn].forEach(el=> el.disabled=run);
+  stopBtn.disabled=!run; markBtn.disabled=!run;
+}
 function startElapsed(){
-  const t0=Date.now(); elapsedEl.textContent='Elapsed: 00:00';
+  const t0=Date.now();
+  elapsedEl.textContent='Elapsed: 00:00';
   elapsedTimer = setInterval(()=>{
     const ms=Date.now()-t0; const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000);
     elapsedEl.textContent = `Elapsed: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
@@ -425,19 +500,39 @@ function startElapsed(){
 }
 function stopElapsed(){ if(elapsedTimer){ clearInterval(elapsedTimer); elapsedTimer=null; }}
 
-async function markMoment(cumZ, p, alpha, plan, trials){
-  const tier = effectLabel(p, alpha).tier;
-  const rec={ project:PROJECT, tester:plan.tester, title:(plan.title? (plan.title+' • Moment') : 'Moment'), start:new Date().toISOString(), duration_min:0, trials:trials, trial_bits:plan.trial_bits, alpha:alpha, z:cumZ, p:p, effect_label:tier };
-  await dbInsert(rec);
-  const rows=await dbFetch(PROJECT); renderTable(rows);
+// live effect display
+function setLiveEffect(p, alpha){
+  const info = effectLabel(p,alpha);
+  const el=document.getElementById('liveEffect');
+  el.className='effect '+info.cls;
+  el.textContent=info.text;
+  return info.tier;
+}
+function setFinalEffect(p, alpha){
+  const info=effectLabel(p,alpha);
+  const el=document.getElementById('finalEffect');
+  el.className='effect '+info.cls;
+  el.textContent='Session complete — '+info.text.replace(/^No unusual pattern detected — /,'').replace(/ — .*$/,'').replace(/^/,'').trim() || info.text;
+  document.getElementById('finalCard').style.display='block';
+  return info.tier;
+}
+
+async function markMoment(plan, zsCum){
+  const project = getProject();
+  const cumZ = zsCum; const p = twoSidedP(cumZ);
+  const tier = effectLabel(p, plan.alpha).tier;
+  const rec={ project, tester:plan.tester, title:(plan.title||'')+' • Moment', start:new Date().toISOString(), duration_min:0, trials:session.zs.length, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:p, effect_label:tier };
+  // add to table immediately
+  await dbInsert(project, rec);
+  await refreshTable();
 }
 
 async function runSession(){
-  clearErr();
+  const project = getProject();
   const plan={ tester:nameEl.value.trim()||'—', title:titleEl.value.trim(), duration_min:Math.max(1,parseInt(durEl.value||'10',10)), trial_bits:Math.max(50,parseInt(trialBitsEl.value||'200',10)), alpha:alphaEl.value, start:new Date().toISOString() };
-  session={plan,zs:[],stop:false}; lockUI(true); clearPlot(); drawAxes(); startElapsed();
-  const endTime=Date.now()+plan.duration_min*60*1000;
+  session={plan,zs:[],stop:false}; lockUI(true); clearPlot(); plotSeries([], plan.alpha); startElapsed();
   try{
+    const endTime=Date.now()+plan.duration_min*60*1000;
     while(!session.stop && Date.now()<endTime){
       const words=Math.ceil(plan.trial_bits/16);
       const u16=await qrng(Math.min(1024,words));
@@ -451,44 +546,59 @@ async function runSession(){
       document.getElementById('cumZ').textContent=cumZ.toFixed(3);
       document.getElementById('pval').textContent=p.toExponential(2);
       const tier = setLiveEffect(p, plan.alpha);
-      // auto-mark every unusual moment (>= Possible)
-      if (tier!=='Normal') { await markMoment(cumZ, p, plan.alpha, plan, session.zs.length); }
       plotSeries(session.zs, plan.alpha);
+      // Auto-mark every unusual moment (>= Possible)
+      if (tier==='Possible' || tier==='Strong' || tier==='Extraordinary'){
+        await markMoment(plan, cumZ);
+      }
       await new Promise(r=> setTimeout(r,1000));
     }
     const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(Math.max(1,session.zs.length));
     const p = twoSidedP(cumZ);
     const tier = setFinalEffect(p, plan.alpha);
-    const rec={ project:PROJECT, tester:plan.tester, title:plan.title, start:plan.start, duration_min:plan.duration_min, trials:session.zs.length, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:p, effect_label:tier };
-    await dbInsert(rec);
-    const rows=await dbFetch(PROJECT); renderTable(rows);
+    const rec={ project, tester:plan.tester, title:plan.title, start:plan.start, duration_min:plan.duration_min, trials:session.zs.length, trial_bits:plan.trial_bits, alpha:plan.alpha, z:cumZ, p:p, effect_label:tier };
+    await dbInsert(project, rec);
+    await refreshTable();
   }catch(e){
-    showErr(e.message||String(e));
+    setError(e.message || String(e));
   }finally{
     stopElapsed(); lockUI(false); session=null;
-    flushOutboxSoon();
   }
 }
 
-startBtn.addEventListener('click', ()=>{ if(session) return; runSession(); });
-stopBtn.addEventListener('click', ()=>{ if(session) session.stop=true; });
-markBtn.addEventListener('click', async ()=>{
+// Buttons
+document.getElementById('startBtn').addEventListener('click', ()=>{ if(session) return; runSession(); });
+document.getElementById('stopBtn').addEventListener('click', ()=>{ if(session) session.stop=true; });
+document.getElementById('markBtn').addEventListener('click', ()=>{
   if(!session) return;
   const cumZ=session.zs.reduce((a,b)=>a+b,0)/Math.sqrt(Math.max(1,session.zs.length));
-  const p = twoSidedP(cumZ);
-  await markMoment(cumZ, p, session.plan.alpha, session.plan, session.zs.length);
+  markMoment(session.plan, cumZ);
 });
+
+async function refreshTable(){
+  const rows = await dbFetch(getProject());
+  // Cache mirror
+  localStorage.setItem('sessions_cache', JSON.stringify(rows));
+  renderTable(rows);
+}
+
+// Service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+}
 
 // Boot
 async function boot(){
-  clearPlot(); drawAxes();
-  const rows=await dbFetch(PROJECT); renderTable(rows);
-  // service worker
-  if ('serviceWorker' in navigator){
-    try { await navigator.serviceWorker.register('./sw.js'); } catch(e){}
+  try{
+    setOffline(!navigator.onLine);
+    clearPlot(); plotSeries([], '0.05');
+    await flushOutbox();
+    await refreshTable();
+  }catch(e){
+    setError(e.message || String(e));
   }
-  // Try flushing any outbox at start
-  flushOutboxSoon();
 }
 boot();
 </script>
